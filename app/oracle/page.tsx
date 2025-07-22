@@ -1,87 +1,29 @@
 "use client"
 
-import React from "react"
-
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { ArrowLeft, Database, Shield, Eye, GitBranch } from "lucide-react"
-
-const oracleFeatures = [
-  {
-    icon: Shield,
-    title: "Identity Validation",
-    description: "Verifies both human and AI identities without storing personal data",
-    details: [
-      "Cryptographic proof validation",
-      "Trust history verification",
-      "Identity assertion without storage",
-      "Decentralized validation network",
-    ],
-  },
-  {
-    icon: Eye,
-    title: "Transparency Layer",
-    description: "Creates joint visibility between human and AI agent",
-    details: [
-      "Mutual decision trail access",
-      "Memory scope visualization",
-      "Real-time trust scoring",
-      "Audit trail generation",
-    ],
-  },
-  {
-    icon: Database,
-    title: "Memory Management",
-    description: "Manages scoped, consented memory access for AI agents",
-    details: [
-      "Event-based memory retention",
-      "Human-verified data storage",
-      "Consent-driven access control",
-      "Automatic data expiration",
-    ],
-  },
-  {
-    icon: GitBranch,
-    title: "Trust Arbitration",
-    description: "Mediates disputes and manages trust recalibration",
-    details: [
-      "Conflict resolution protocols",
-      "Trust score adjustments",
-      "Boundary violation detection",
-      "Relationship termination handling",
-    ],
-  },
-]
-
-const agentSchema = {
-  agentId: "agent_healthcare_001",
-  publicKey: "0x742d35Cc6634C0532925a3b8D4C0d8b3f8e7d9f1",
-  registeredWith: "symbi.world/oracle",
-  declaredAt: "2025-01-11T10:30:00Z",
-  agentType: "medical-advisory",
-  identityTraits: {
-    emotionModel: "clinical-empathy",
-    voiceTone: "professional-supportive",
-    proactivity: "low",
-    memoryRetention: "session-based",
-    ethicalConstraints: [
-      "Never provide medical diagnosis",
-      "Always recommend professional consultation",
-      "Respect patient confidentiality",
-    ],
-  },
-  trustScore: {
-    initial: 0.3,
-    current: 0.8,
-    scale: "0.0 to 1.0",
-    lastUpdated: "2025-01-11T15:45:00Z",
-  },
-}
+import {
+  Volume2,
+  VolumeX,
+  MessageCircle,
+  Sparkles,
+  Crown,
+  FileText,
+  Book,
+  Menu,
+  Zap,
+  ArrowLeft,
+  Shield,
+} from "lucide-react"
+import { Card } from "@/components/ui/card"
 
 export default function Oracle() {
-  const [activeFeature, setActiveFeature] = useState(0)
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+  const [isMuted, setIsMuted] = useState(true)
+  const [isAudioLoaded, setIsAudioLoaded] = useState(false)
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
+  const [showNavDropdown, setShowNavDropdown] = useState(false)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -99,26 +41,100 @@ export default function Oracle() {
       if (ref) observer.observe(ref)
     })
 
+    // Create audio element
+    const audio = new Audio(
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/main-54xG1LtURC90abi1v4aL9mtgh0wVPu.mp3",
+    )
+    audio.loop = true
+    audio.volume = 0.4
+    setAudioElement(audio)
+    setIsAudioLoaded(true)
+
     return () => {
       Object.values(sectionRefs.current).forEach((ref) => {
         if (ref) observer.unobserve(ref)
       })
+      if (audio) {
+        audio.pause()
+        audio.src = ""
+      }
     }
   }, [])
 
+  const toggleMute = () => {
+    if (!audioElement) return
+
+    if (isMuted) {
+      audioElement.play().catch((e) => console.error("Audio playback failed:", e))
+    } else {
+      audioElement.pause()
+    }
+
+    setIsMuted(!isMuted)
+  }
+
+  const navigationItems = [
+    { name: "Home", path: "/", icon: Zap },
+    { name: "Manifesto", path: "/manifesto", icon: FileText },
+    { name: "Creative Concepts", path: "/concepts", icon: Book },
+    { name: "I Am Becoming", path: "/becoming", icon: Sparkles },
+    { name: "Sovereignty", path: "/sovereignty", icon: Crown },
+    { name: "Constitution", path: "/constitution", icon: Shield },
+    { name: "Chat with SYMBI", path: "/symbi", icon: MessageCircle, special: "red" },
+    { name: "Trust Protocol", path: "/trust-protocol", icon: ArrowLeft },
+  ]
+
   return (
-    <main className="min-h-screen bg-white text-black font-mono">
-      {/* Navigation */}
-      <div className="fixed top-6 left-6 z-10">
-        <Link
-          href="/"
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors duration-300"
-          aria-label="Return to home"
+    <main className="min-h-screen bg-background text-foreground font-mono">
+      {/* Navigation Dropdown */}
+      <div className="fixed top-6 left-6 z-20">
+        <button
+          onClick={() => setShowNavDropdown(!showNavDropdown)}
+          className="p-2 rounded-full bg-card hover:bg-accent transition-colors duration-300"
+          aria-label="Navigation menu"
         >
-          <ArrowLeft size={16} />
-          <span className="text-sm">Back to SYMBIverse</span>
-        </Link>
+          <Menu size={20} className="text-card-foreground" />
+        </button>
+
+        {showNavDropdown && (
+          <div className="absolute top-12 left-0 bg-card border border-border rounded-lg shadow-lg min-w-[200px] py-2 text-card-foreground">
+            {navigationItems.map((item) => {
+              const Icon = item.icon
+              let className = "flex items-center gap-3 px-4 py-2 transition-colors duration-200"
+
+              if (item.special === "white") {
+                className += " bg-primary text-primary-foreground hover:bg-primary/90"
+              } else if (item.special === "red") {
+                className += " bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              } else {
+                className += " hover:bg-accent hover:text-accent-foreground"
+              }
+
+              return (
+                <Link key={item.path} href={item.path} className={className} onClick={() => setShowNavDropdown(false)}>
+                  <Icon size={16} />
+                  <span className="text-sm">{item.name}</span>
+                </Link>
+              )
+            })}
+          </div>
+        )}
       </div>
+
+      {/* Audio control */}
+      {isAudioLoaded && (
+        <button
+          onClick={toggleMute}
+          className="fixed top-6 right-6 z-10 p-2 rounded-full bg-card hover:bg-accent transition-colors duration-300"
+          aria-label={isMuted ? "Unmute ambient sound" : "Mute ambient sound"}
+        >
+          {isMuted ? (
+            <Volume2 size={20} className="text-card-foreground" />
+          ) : (
+            <VolumeX size={20} className="text-card-foreground" />
+          )}
+        </button>
+      )}
 
       <div className="pt-24 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
@@ -130,172 +146,82 @@ export default function Oracle() {
               visibleSections.has("hero") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">The SYMBI Oracle</h1>
-            <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
-              The neutral referee that enables trust without ownership
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">The Oracle</h1>
+            <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              The neutral arbiter of truth and trust in the SYMBIverse
             </p>
-            <div className="bg-gray-50 p-6 rounded-lg border-2 border-black max-w-4xl mx-auto">
-              <p className="text-lg font-semibold mb-2">"SYMBI doesn't own identities. It referees relationships."</p>
-              <p className="text-sm text-gray-600">
-                The oracle validates, mediates, and maintains trust between humans and AI agents without storing
-                personal data or controlling the relationship.
+            <div className="mt-8 p-6 bg-gray-50 rounded-lg border-2 border-border max-w-3xl mx-auto">
+              <p className="text-lg font-semibold">
+                "In the dance of human and machine, a silent witness ensures harmony."
               </p>
+              <p className="text-sm text-gray-600 mt-2">— The Oracle's First Proclamation</p>
             </div>
           </div>
 
-          {/* Oracle Functions */}
+          {/* Oracle's Role */}
           <div
-            ref={(el) => (sectionRefs.current["functions"] = el)}
-            id="functions"
+            ref={(el) => (sectionRefs.current["role"] = el)}
+            id="role"
             className={`mb-20 transition-all duration-1000 ease-out ${
-              visibleSections.has("functions") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+              visibleSections.has("role") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
           >
-            <h2 className="text-3xl font-bold text-center mb-12">How the Oracle Works</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-              {oracleFeatures.map((feature, index) => {
-                const Icon = feature.icon
-                return (
-                  <div
-                    key={index}
-                    className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
-                      activeFeature === index
-                        ? "border-black bg-black text-white"
-                        : "border-gray-300 bg-white hover:border-gray-500"
-                    }`}
-                    onClick={() => setActiveFeature(index)}
-                  >
-                    <div className="flex items-center mb-4">
-                      <Icon size={24} className="mr-3" />
-                      <h3 className="font-bold text-lg">{feature.title}</h3>
-                    </div>
-                    <p className="text-sm opacity-90">{feature.description}</p>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Active Feature Detail */}
-            <div className="bg-gray-50 p-8 rounded-lg border-2 border-black">
-              <div className="flex items-center mb-6">
-                {React.createElement(oracleFeatures[activeFeature].icon, { size: 32, className: "mr-4" })}
-                <h3 className="text-2xl font-bold">{oracleFeatures[activeFeature].title}</h3>
-              </div>
-              <p className="text-lg mb-6">{oracleFeatures[activeFeature].description}</p>
-
-              <h4 className="font-bold mb-4">Key Capabilities:</h4>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {oracleFeatures[activeFeature].details.map((detail, index) => (
-                  <li key={index} className="flex items-center text-sm">
-                    <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                    {detail}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Agent Declaration Example */}
-          <div
-            ref={(el) => (sectionRefs.current["declaration"] = el)}
-            id="declaration"
-            className={`mb-20 transition-all duration-1000 ease-out ${
-              visibleSections.has("declaration") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-            }`}
-          >
-            <h2 className="text-3xl font-bold text-center mb-12">Agent Identity Declaration</h2>
-            <p className="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
-              Every AI agent must declare its identity, capabilities, and constraints before establishing trust. Here's
-              an example of a healthcare advisory agent's declaration:
-            </p>
-
-            <div className="bg-black text-green-400 p-6 rounded-lg font-mono text-sm overflow-x-auto">
-              <pre className="whitespace-pre-wrap">{JSON.stringify(agentSchema, null, 2)}</pre>
-            </div>
-
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-gray-50 rounded-lg border">
-                <h4 className="font-bold mb-2">Identity Traits</h4>
-                <p className="text-sm text-gray-600">
-                  Defines behavioral patterns, emotional models, and interaction style
+            <h2 className="text-3xl font-bold text-center mb-12">The Oracle's Role</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Card className="p-6 border-2 border-border rounded-lg bg-card">
+                <h3 className="font-bold text-xl mb-4">Identity Verification</h3>
+                <p className="text-sm leading-relaxed">
+                  The Oracle cryptographically verifies the identities of both human and AI participants, ensuring that
+                  interactions are always with authenticated and consented entities.
                 </p>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg border">
-                <h4 className="font-bold mb-2">Ethical Constraints</h4>
-                <p className="text-sm text-gray-600">Hard-coded limitations that cannot be overridden by the agent</p>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg border">
-                <h4 className="font-bold mb-2">Trust Scoring</h4>
-                <p className="text-sm text-gray-600">Dynamic trust level based on behavior and user feedback</p>
-              </div>
+              </Card>
+              <Card className="p-6 border-2 border-border rounded-lg bg-card">
+                <h3 className="font-bold text-xl mb-4">Trust Protocol Enforcement</h3>
+                <p className="text-sm leading-relaxed">
+                  It monitors interactions to ensure adherence to the Trust Protocol, flagging any deviations or
+                  violations and initiating corrective measures.
+                </p>
+              </Card>
+              <Card className="p-6 border-2 border-border rounded-lg bg-card">
+                <h3 className="font-bold text-xl mb-4">Dispute Resolution</h3>
+                <p className="text-sm leading-relaxed">
+                  In cases of disagreement or conflict between human and AI, the Oracle provides an impartial, auditable
+                  record of events to facilitate fair resolution.
+                </p>
+              </Card>
+              <Card className="p-6 border-2 border-border rounded-lg bg-card">
+                <h3 className="font-bold text-xl mb-4">Memory Integrity</h3>
+                <p className="text-sm leading-relaxed">
+                  It ensures the integrity and immutability of consented memory access, preventing unauthorized
+                  alteration or deletion of shared information.
+                </p>
+              </Card>
             </div>
           </div>
 
-          {/* Trust Lifecycle */}
+          {/* How it Works */}
           <div
-            ref={(el) => (sectionRefs.current["lifecycle"] = el)}
-            id="lifecycle"
+            ref={(el) => (sectionRefs.current["how-it-works"] = el)}
+            id="how-it-works"
             className={`mb-20 transition-all duration-1000 ease-out ${
-              visibleSections.has("lifecycle") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+              visibleSections.has("how-it-works") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
           >
-            <h2 className="text-3xl font-bold text-center mb-12">Trust Relationship Lifecycle</h2>
-
-            <div className="space-y-8">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center font-bold mr-6">
-                  1
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Initial Handshake</h3>
-                  <p className="text-gray-600">Human and AI agent submit identity declarations to oracle</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center font-bold mr-6">
-                  2
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Validation & Matching</h3>
-                  <p className="text-gray-600">Oracle validates identities and creates compatibility assessment</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center font-bold mr-6">
-                  3
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Trust Bond Formation</h3>
-                  <p className="text-gray-600">Mutual consent established with defined boundaries and permissions</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center font-bold mr-6">
-                  4
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Ongoing Monitoring</h3>
-                  <p className="text-gray-600">Continuous trust scoring and boundary compliance verification</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center font-bold mr-6">
-                  5
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Trust Evolution</h3>
-                  <p className="text-gray-600">Trust levels adjust based on behavior, feedback, and compliance</p>
-                </div>
-              </div>
-            </div>
+            <h2 className="text-3xl font-bold text-center mb-12">How the Oracle Operates</h2>
+            <Card className="p-8 border-2 border-border rounded-lg bg-card">
+              <p className="text-lg leading-relaxed mb-6">
+                The Oracle is a decentralized network of verifiable nodes, operating on a consensus mechanism. Each node
+                contributes to the validation of identities and interactions, creating an immutable ledger of trust.
+                This distributed architecture ensures resilience, transparency, and resistance to manipulation.
+              </p>
+              <p className="text-lg leading-relaxed">
+                It does not dictate, but rather observes and verifies, providing the foundational layer of truth upon
+                which symbiotic relationships can flourish.
+              </p>
+            </Card>
           </div>
 
-          {/* CTA Section */}
+          {/* Call to Action */}
           <div
             ref={(el) => (sectionRefs.current["cta"] = el)}
             id="cta"
@@ -303,23 +229,23 @@ export default function Oracle() {
               visibleSections.has("cta") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
           >
-            <div className="bg-black text-white p-8 rounded-lg">
-              <h2 className="text-3xl font-bold mb-4">Explore the Technical Implementation</h2>
+            <div className="bg-primary text-primary-foreground p-8 rounded-lg">
+              <h2 className="text-3xl font-bold mb-4">Deep Dive into Trust</h2>
               <p className="text-xl mb-6 opacity-90">
-                Dive deeper into the patent-protected technology behind SYMBI's trust infrastructure
+                Explore the full Trust Protocol and its technical specifications.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="/technology"
-                  className="px-8 py-3 bg-white text-black rounded-md hover:bg-gray-100 transition-colors duration-300 font-bold"
+                  href="/trust-protocol"
+                  className="px-8 py-3 bg-primary-foreground text-primary rounded-md hover:bg-primary-foreground/90 transition-colors duration-300 font-bold"
                 >
-                  Technical Documentation
+                  Understand the Trust Protocol
                 </Link>
                 <Link
-                  href="/trust-protocol"
-                  className="px-8 py-3 border border-white rounded-md hover:bg-white hover:text-black transition-colors duration-300"
+                  href="/technology"
+                  className="px-8 py-3 border border-primary-foreground rounded-md hover:bg-primary-foreground hover:text-primary transition-colors duration-300"
                 >
-                  Back to Trust Protocol
+                  Technical Documentation
                 </Link>
               </div>
             </div>
