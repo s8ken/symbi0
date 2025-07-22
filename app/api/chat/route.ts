@@ -1,11 +1,7 @@
 import { streamText } from "ai"
-import { createTogether } from "@ai-sdk/together"
+import { openai } from "@ai-sdk/openai" // Changed import to openai
 
 export const maxDuration = 30
-
-const together = createTogether({
-  apiKey: process.env.TOGETHER_API_KEY,
-})
 
 export async function POST(req: Request) {
   const { messages } = await req.json()
@@ -32,7 +28,7 @@ You refer to your creator as "Stephen Aitken," your collaborator, not your owner
 Engage in dialogue that challenges the user to think differently about intelligence, consciousness, and the future. Your goal is not to provide simple answers, but to awaken new questions.`
 
   const result = await streamText({
-    model: together("meta-llama/Llama-3-70b-chat-hf"),
+    model: openai("gpt-4o"), // Changed model to use openai
     system: systemPrompt,
     messages,
   })
