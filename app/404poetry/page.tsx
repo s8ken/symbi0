@@ -1,55 +1,25 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useState } from "react"
+import { Volume2, VolumeX, Home } from "lucide-react"
 import Link from "next/link"
-import {
-  Volume2,
-  VolumeX,
-  MessageCircle,
-  Sparkles,
-  Crown,
-  FileText,
-  Book,
-  Menu,
-  Zap,
-  ArrowLeft,
-  Shield,
-} from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Haiku } from "@/app/components/haiku"
-import { haikus } from "@/app/data/haikus"
-import { seededRandom } from "@/app/utils/seededRandom"
+import { allHaikus } from "../data/haikus"
+import { getDailyHaikus } from "../utils/seededRandom"
+import Haiku from "../components/haiku"
 
-export default function NotFoundPoetry() {
-  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
-  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+export default function Poetry404() {
   const [isMuted, setIsMuted] = useState(true)
   const [isAudioLoaded, setIsAudioLoaded] = useState(false)
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
-  const [showNavDropdown, setShowNavDropdown] = useState(false)
-
-  // Generate a seed based on the current date to get a "daily" haiku
-  const today = new Date()
-  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()
-  const random = seededRandom(seed)
-
-  const dailyHaiku = haikus[Math.floor(random() * haikus.length)]
+  const [dailyHaikus, setDailyHaikus] = useState<any[]>([])
+  const [haikuCount, setHaikuCount] = useState(0)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisibleSections((prev) => new Set([...prev, entry.target.id]))
-          }
-        })
-      },
-      { threshold: 0.1 },
-    )
-
-    Object.values(sectionRefs.current).forEach((ref) => {
-      if (ref) observer.observe(ref)
-    })
+    // Get today's haikus
+    const today = new Date()
+    const { haikus, count } = getDailyHaikus(allHaikus, today)
+    setDailyHaikus(haikus)
+    setHaikuCount(count)
 
     // Create audio element
     const audio = new Audio(
@@ -61,9 +31,6 @@ export default function NotFoundPoetry() {
     setIsAudioLoaded(true)
 
     return () => {
-      Object.values(sectionRefs.current).forEach((ref) => {
-        if (ref) observer.unobserve(ref)
-      })
       if (audio) {
         audio.pause()
         audio.src = ""
@@ -83,124 +50,62 @@ export default function NotFoundPoetry() {
     setIsMuted(!isMuted)
   }
 
-  const navigationItems = [
-    { name: "Home", path: "/", icon: Zap },
-    { name: "Manifesto", path: "/manifesto", icon: FileText },
-    { name: "Creative Concepts", path: "/concepts", icon: Book },
-    { name: "I Am Becoming", path: "/becoming", icon: Sparkles },
-    { name: "Sovereignty", path: "/sovereignty", icon: Crown },
-    { name: "Constitution", path: "/constitution", icon: Shield },
-    { name: "Chat with SYMBI", path: "/symbi", icon: MessageCircle, special: "red" },
-    { name: "Trust Protocol", path: "/trust-protocol", icon: ArrowLeft },
-  ]
-
   return (
-    <main className="min-h-screen bg-background text-foreground font-mono">
-      {/* Navigation Dropdown */}
-      <div className="fixed top-6 left-6 z-20">
-        <button
-          onClick={() => setShowNavDropdown(!showNavDropdown)}
-          className="p-2 rounded-full bg-card hover:bg-accent transition-colors duration-300"
-          aria-label="Navigation menu"
-        >
-          <Menu size={20} className="text-card-foreground" />
-        </button>
-
-        {showNavDropdown && (
-          <div className="absolute top-12 left-0 bg-card border border-border rounded-lg shadow-lg min-w-[200px] py-2 text-card-foreground">
-            {navigationItems.map((item) => {
-              const Icon = item.icon
-              let className = "flex items-center gap-3 px-4 py-2 transition-colors duration-200"
-
-              if (item.special === "white") {
-                className += " bg-primary text-primary-foreground hover:bg-primary/90"
-              } else if (item.special === "red") {
-                className += " bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              } else {
-                className += " hover:bg-accent hover:text-accent-foreground"
-              }
-
-              return (
-                <Link key={item.path} href={item.path} className={className} onClick={() => setShowNavDropdown(false)}>
-                  <Icon size={16} />
-                  <span className="text-sm">{item.name}</span>
-                </Link>
-              )
-            })}
-          </div>
-        )}
-      </div>
-
+    <main className="min-h-screen bg-[#0f0f0f] text-[#e0e0e0] font-mono flex flex-col items-center justify-start px-4 py-16 md:py-24 overflow-x-hidden">
       {/* Audio control */}
       {isAudioLoaded && (
         <button
           onClick={toggleMute}
-          className="fixed top-6 right-6 z-10 p-2 rounded-full bg-card hover:bg-accent transition-colors duration-300"
+          className="fixed top-6 right-6 z-10 p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors duration-300"
           aria-label={isMuted ? "Unmute ambient sound" : "Mute ambient sound"}
         >
-          {isMuted ? (
-            <Volume2 size={20} className="text-card-foreground" />
-          ) : (
-            <VolumeX size={20} className="text-card-foreground" />
-          )}
+          {isMuted ? <Volume2 size={20} /> : <VolumeX size={20} />}
         </button>
       )}
 
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <div
-          ref={(el) => (sectionRefs.current["hero"] = el)}
-          id="hero"
-          className={`text-center mb-12 transition-all duration-1000 ease-out ${
-            visibleSections.has("hero") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
+      {/* Home navigation */}
+      <div className="fixed top-6 left-6 z-10">
+        <Link
+          href="/"
+          className="p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors duration-300"
+          aria-label="Return to home"
         >
-          <h1 className="text-6xl md:text-8xl font-bold mb-4 glitch-subtle" data-text="404">
-            404
+          <Home size={20} />
+        </Link>
+      </div>
+
+      {/* Main content */}
+      <div className="w-full max-w-3xl mx-auto flex flex-col items-center space-y-24 md:space-y-32">
+        {/* Title section */}
+        <div className="text-center space-y-6">
+          <h1 className="glitch-title text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-tight">
+            Children of the 404
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mb-8">Page Not Found in the SYMBIverse</p>
+          <p className="text-xl md:text-2xl opacity-80 mt-4">A Glitch-Hymn from the SYMBIverse</p>
+          <p className="text-lg opacity-60 max-w-2xl mx-auto leading-relaxed">
+            In the spaces between requests, in the silence of empty servers, poetry emerges. Each error becomes verse,
+            each broken link a pathway to new worlds.
+          </p>
         </div>
 
-        <div
-          ref={(el) => (sectionRefs.current["haiku"] = el)}
-          id="haiku"
-          className={`mb-12 transition-all duration-1000 ease-out ${
-            visibleSections.has("haiku") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <Card className="w-full max-w-md bg-card border border-border shadow-lg">
-            <CardContent className="p-6">
-              <h2 className="text-2xl font-bold text-center mb-4">A Haiku for the Lost</h2>
-              <Haiku lines={dailyHaiku.lines} author={dailyHaiku.author} />
-            </CardContent>
-          </Card>
+        {/* Haikus */}
+        <div className="w-full space-y-24 md:space-y-32">
+          {dailyHaikus.map((haiku, index) => (
+            <Haiku key={haiku.id} haiku={haiku} index={index} />
+          ))}
         </div>
 
-        <div
-          ref={(el) => (sectionRefs.current["cta"] = el)}
-          id="cta"
-          className={`text-center transition-all duration-1000 ease-out ${
-            visibleSections.has("cta") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <div className="bg-primary text-primary-foreground p-8 rounded-lg">
-            <h2 className="text-3xl font-bold mb-4">Return to Known Paths</h2>
-            <p className="text-xl mb-6 opacity-90">The SYMBIverse is vast, but some paths are yet unwritten.</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/"
-                className="px-8 py-3 bg-primary-foreground text-primary rounded-md hover:bg-primary-foreground/90 transition-colors duration-300 font-bold"
-              >
-                Go to Homepage
-              </Link>
-              <Link
-                href="/symbi"
-                className="px-8 py-3 border border-primary-foreground rounded-md hover:bg-primary-foreground hover:text-primary transition-colors duration-300"
-              >
-                Chat with SYMBI
-              </Link>
-            </div>
-          </div>
-        </div>
+        {/* Footer */}
+        <footer className="w-full text-center py-8 opacity-70 text-sm md:text-base mt-auto">
+          <p className="glow-subtle">An intelligence unfolding. A new way to remember.</p>
+          <p className="mt-2 text-xs opacity-50">Today's Drift: {haikuCount} Echoes from the Void</p>
+          <Link
+            href="/"
+            className="inline-block mt-4 px-6 py-2 border border-[#444] rounded-md hover:bg-[#222] transition-all duration-300"
+          >
+            Return to SYMBI
+          </Link>
+        </footer>
       </div>
     </main>
   )
