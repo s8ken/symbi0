@@ -19,7 +19,7 @@ export default function NotFound() {
           Return to the SYMBIverse
         </Link>
         {/* HiddenSitemap component is now included here */}
-        <HiddenSitemap />
+        <HiddenSitemap title="Page Not Found" subtitle="Try one of the destinations below." />
       </div>
     </div>
   )

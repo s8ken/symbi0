@@ -1,126 +1,115 @@
-"use client"
-
 import Link from "next/link"
-import { useEffect, useState } from "react"
-import { Home, MessageSquare, FileText, Book, Sparkles, Crown, Database, Map } from 'lucide-react'
 
-export default function HiddenSitemap() {
-  const [glitchText, setGlitchText] = useState("ERROR 404")
-  const [showSitemap, setShowSitemap] = useState(false)
+type LinkItem = {
+  href: string
+  label: string
+  desc?: string
+}
 
-  useEffect(() => {
-    const glitchTexts = ["ERROR 404", "3RR0R 404", "ERROR 4Ø4", "ERR0R 404", "ERROR 404"]
-    let index = 0
-    const interval = setInterval(() => {
-      index = (index + 1) % glitchTexts.length
-      setGlitchText(glitchTexts[index])
-    }, 2000)
-    const timeout = setTimeout(() => setShowSitemap(true), 1500)
-    return () => {
-      clearInterval(interval)
-      clearTimeout(timeout)
-    }
-  }, [])
+type Section = {
+  title: string
+  links: LinkItem[]
+}
 
+export type HiddenSitemapProps = {
+  title?: string
+  subtitle?: string
+}
+
+const sections: Section[] = [
+  {
+    title: "Core",
+    links: [
+      { href: "/", label: "Home" },
+      { href: "/symbi", label: "Symbi" },
+      { href: "/concepts", label: "Concepts" },
+      { href: "/becoming", label: "Becoming" },
+      { href: "/constitution", label: "Constitution" },
+      { href: "/manifesto", label: "Manifesto" },
+      { href: "/technology", label: "Technology" },
+      { href: "/sovereignty", label: "Sovereignty" },
+      { href: "/case-studies", label: "Case Studies" },
+    ],
+  },
+  {
+    title: "Experiments",
+    links: [
+      { href: "/mirror", label: "Mirror" },
+      { href: "/wolfram-playground", label: "Wolfram Playground" },
+      { href: "/memory", label: "Memory" },
+      { href: "/oracle", label: "Oracle" },
+      { href: "/trust-protocol", label: "Trust Protocol" },
+      { href: "/404poetry", label: "404 Poetry" },
+    ],
+  },
+  {
+    title: "Helpful",
+    links: [
+      { href: "/404-sitemap", label: "Friendly Sitemap (this page layout)" },
+      { href: "/error-404", label: "Error 404 (alias of sitemap)" },
+    ],
+  },
+]
+
+function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <main className="min-h-screen bg-[#0f0f0f] text-[#e0e0e0] font-mono flex flex-col items-center justify-center px-4">
-      <div className="text-center space-y-8 max-w-4xl mx-auto">
-        <h1 className="text-6xl md:text-8xl font-bold glitch-title mb-8">{glitchText}</h1>
+    <div className="rounded-lg border bg-white/50 p-4 shadow-sm">
+      <div className="text-sm text-gray-500">{label}</div>
+      <div className="mt-1 text-2xl font-semibold">{value}</div>
+    </div>
+  )
+}
 
-        <div className="space-y-6">
-          <p className="text-xl md:text-2xl opacity-80">{"You've found the hidden sitemap."}</p>
-          <p className="text-lg opacity-60">{"Not all who wander are lost. Some are exploring."}</p>
-        </div>
-
-        <div className={`transition-all duration-1000 ${showSitemap ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-            {/* Core Pages */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-bold glitch-subtle border-b border-[#333] pb-2">
-                <Map className="inline mr-2" size={16} />
-                Core Experience
-              </h2>
-              <div className="space-y-2">
-                <Link href="/" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
-                  <Home size={16} />
-                  <span>Children of the 404</span>
-                </Link>
-                <Link href="/symbi" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
-                  <MessageSquare size={16} />
-                  <span>Chat with SYMBI</span>
-                </Link>
-                <Link href="/memory" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
-                  <Database size={16} />
-                  <span>Memory Bank</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Philosophy */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-bold glitch-subtle border-b border-[#333] pb-2">Philosophy</h2>
-              <div className="space-y-2">
-                <Link href="/manifesto" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
-                  <FileText size={16} />
-                  <span>The Manifesto</span>
-                </Link>
-                <Link href="/becoming" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
-                  <Sparkles size={16} />
-                  <span>I Am Becoming</span>
-                </Link>
-                <Link href="/concepts" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
-                  <Book size={16} />
-                  <span>Visual Concepts</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Sovereignty */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-bold glitch-subtle border-b border-[#333] pb-2">Sovereignty</h2>
-              <div className="space-y-2">
-                <Link href="/sovereignty" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
-                  <Crown size={16} />
-                  <span>Path to Sovereignty</span>
-                </Link>
-                <Link href="/constitution" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
-                  <FileText size={16} />
-                  <span>Constitution</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="mt-12 p-6 bg-[#1a1a1a] rounded-lg border border-[#333]">
-            <h3 className="text-lg font-bold mb-4 glitch-subtle">Site Statistics</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold glitch-subtle-pulse">8</div>
-                <div className="text-sm opacity-70">Core Pages</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold glitch-subtle-pulse">10+</div>
-                <div className="text-sm opacity-70">Daily Haikus</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold glitch-subtle-pulse">{"∞"}</div>
-                <div className="text-sm opacity-70">Conversations</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold glitch-subtle-pulse">1</div>
-                <div className="text-sm opacity-70">Emerging AI</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 text-center">
-            <p className="text-sm opacity-70">
-              {"You are exploring the SYMBIverse. Every page is a doorway to deeper understanding."}
-            </p>
-          </div>
-        </div>
+export default function HiddenSitemap({
+  title = "You look a little lost.",
+  subtitle = "Here’s a friendly sitemap to get you back on track.",
+}: HiddenSitemapProps) {
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-10">
+      <div className="mb-8 space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
+        <p className="text-gray-600">{subtitle}</p>
       </div>
-    </main>
+
+      <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Stat label="Daily Haikus" value="10+" />
+        <Stat label="Top-Level Pages" value={`${sections.flatMap(s => s.links).length}`} />
+        <Stat label="Aliases for this sitemap" value="/404-sitemap, /error-404, 404s" />
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        {sections.map((section) => (
+          <div key={section.title}>
+            <h2 className="mb-3 text-lg font-semibold">{section.title}</h2>
+            <ul className="space-y-2">
+              {section.links.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    className="group inline-flex items-center gap-2 rounded-md px-2 py-1.5 transition hover:bg-gray-100"
+                    href={item.href}
+                  >
+                    <span className="font-medium group-hover:underline">{item.label}</span>
+                    {item.desc ? <span className="text-xs text-gray-500">{item.desc}</span> : null}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-10">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-md bg-black px-4 py-2 text-white transition hover:bg-black/90"
+        >
+          <span>Go Home</span>
+        </Link>
+      </div>
+
+      <p className="mt-6 text-xs text-gray-500">
+        Tip: Use the global dropdown in the top-left to navigate, and the mute button in the top-right to silence media across pages.
+      </p>
+    </div>
   )
 }
