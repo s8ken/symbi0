@@ -1,10 +1,8 @@
 "use client"
 
-import React from "react"
-import { useState, useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { Shield, Users, Eye, CheckCircle, AlertCircle } from "lucide-react"
-import { Navigation } from "../components/navigation"
+import { Shield, Users, Eye, CheckCircle, AlertCircle } from 'lucide-react'
 
 const trustSteps = [
   {
@@ -95,8 +93,6 @@ export default function TrustProtocol() {
 
   return (
     <main className="min-h-screen bg-white text-black font-mono">
-      <Navigation activePage="Trust Protocol" theme="light" />
-
       <div className="pt-24 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
@@ -142,9 +138,7 @@ export default function TrustProtocol() {
                   >
                     <div className="flex items-center mb-4">
                       <div
-                        className={`p-2 rounded-full mr-3 ${
-                          activeStep === step.id ? "bg-white text-black" : "bg-gray-100"
-                        }`}
+                        className={`p-2 rounded-full mr-3 ${activeStep === step.id ? "bg-white text-black" : "bg-gray-100"}`}
                       >
                         <Icon size={20} />
                       </div>
@@ -254,6 +248,52 @@ export default function TrustProtocol() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          {/* Use Cases */}
+          <div
+            ref={(el) => (sectionRefs.current["usecases"] = el)}
+            id="usecases"
+            className={`mb-20 transition-all duration-1000 ease-out ${
+              visibleSections.has("usecases") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+            }`}
+          >
+            <h2 className="text-3xl font-bold text-center mb-12">Real-World Applications</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="p-6 border-2 border-black rounded-lg">
+                <h3 className="font-bold text-xl mb-4">Healthcare</h3>
+                <p className="text-sm mb-4">
+                  Patient gives conditional consent to AI for lab result interpretation. Trust earned through accurate,
+                  sensitive summaries. Automatically revoked if agent accesses unauthorized health domains.
+                </p>
+                <div className="text-xs text-gray-600">
+                  <strong>Trust Mechanism:</strong> Medical data scope limiting
+                </div>
+              </div>
+
+              <div className="p-6 border-2 border-black rounded-lg">
+                <h3 className="font-bold text-xl mb-4">Legal</h3>
+                <p className="text-sm mb-4">
+                  AI assists with digital will creation. Each step logged with human feedback. Trust trails serve as
+                  admissible records. Agent cannot suggest unauthorized actions.
+                </p>
+                <div className="text-xs text-gray-600">
+                  <strong>Trust Mechanism:</strong> Legal action authorization
+                </div>
+              </div>
+
+              <div className="p-6 border-2 border-black rounded-lg">
+                <h3 className="font-bold text-xl mb-4">Education</h3>
+                <p className="text-sm mb-4">
+                  AI learning companion for student with dyslexia. Trust increases when AI adapts reading rhythm.
+                  Student must opt-in each session for memory access.
+                </p>
+                <div className="text-xs text-gray-600">
+                  <strong>Trust Mechanism:</strong> Adaptive learning consent
+                </div>
+              </div>
             </div>
           </div>
 

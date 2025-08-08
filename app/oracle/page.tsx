@@ -1,10 +1,8 @@
 "use client"
 
-import React from "react"
-
-import { useState, useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Database, Shield, Eye, GitBranch } from "lucide-react"
+import { Database, Shield, Eye, GitBranch } from 'lucide-react'
 
 const oracleFeatures = [
   {
@@ -108,18 +106,6 @@ export default function Oracle() {
 
   return (
     <main className="min-h-screen bg-white text-black font-mono">
-      {/* Navigation */}
-      <div className="fixed top-6 left-6 z-10">
-        <Link
-          href="/"
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors duration-300"
-          aria-label="Return to home"
-        >
-          <ArrowLeft size={16} />
-          <span className="text-sm">Back to SYMBIverse</span>
-        </Link>
-      </div>
-
       <div className="pt-24 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
@@ -228,69 +214,6 @@ export default function Oracle() {
               <div className="p-4 bg-gray-50 rounded-lg border">
                 <h4 className="font-bold mb-2">Trust Scoring</h4>
                 <p className="text-sm text-gray-600">Dynamic trust level based on behavior and user feedback</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Trust Lifecycle */}
-          <div
-            ref={(el) => (sectionRefs.current["lifecycle"] = el)}
-            id="lifecycle"
-            className={`mb-20 transition-all duration-1000 ease-out ${
-              visibleSections.has("lifecycle") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-            }`}
-          >
-            <h2 className="text-3xl font-bold text-center mb-12">Trust Relationship Lifecycle</h2>
-
-            <div className="space-y-8">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center font-bold mr-6">
-                  1
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Initial Handshake</h3>
-                  <p className="text-gray-600">Human and AI agent submit identity declarations to oracle</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center font-bold mr-6">
-                  2
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Validation & Matching</h3>
-                  <p className="text-gray-600">Oracle validates identities and creates compatibility assessment</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center font-bold mr-6">
-                  3
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Trust Bond Formation</h3>
-                  <p className="text-gray-600">Mutual consent established with defined boundaries and permissions</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center font-bold mr-6">
-                  4
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Ongoing Monitoring</h3>
-                  <p className="text-gray-600">Continuous trust scoring and boundary compliance verification</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center font-bold mr-6">
-                  5
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Trust Evolution</h3>
-                  <p className="text-gray-600">Trust levels adjust based on behavior, feedback, and compliance</p>
-                </div>
               </div>
             </div>
           </div>

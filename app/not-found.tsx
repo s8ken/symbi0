@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link"
+import HiddenSitemap from "@/components/hidden-sitemap"
 
 export default function NotFound() {
   return (
@@ -15,6 +18,8 @@ export default function NotFound() {
         >
           Return to the SYMBIverse
         </Link>
+        {/* HiddenSitemap component is now included here */}
+        <HiddenSitemap />
       </div>
     </div>
   )
