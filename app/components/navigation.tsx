@@ -5,13 +5,14 @@ import Link from "next/link"
 import { Menu, Zap, FileText, Book, Sparkles, Crown, Shield, MessageCircle, Eye, Code, Database, Sun } from 'lucide-react'
 
 interface NavigationProps {
-  activePage: string
+  activePage?: string
   theme?: "dark" | "light"
 }
 
-export function Navigation({ activePage, theme = "dark" }: NavigationProps) {
+export function Navigation({ activePage = "Home", theme = "dark" }: NavigationProps) {
   const [showNavDropdown, setShowNavDropdown] = useState(false)
 
+  // Core (dark) section
   const darkItems = [
     { name: "Home", path: "/", icon: Zap },
     { name: "Manifesto", path: "/manifesto", icon: FileText },
@@ -24,6 +25,7 @@ export function Navigation({ activePage, theme = "dark" }: NavigationProps) {
     { name: "Chat with SYMBI", path: "/symbi", icon: MessageCircle, special: "red" as const },
   ]
 
+  // Light/technical group (Step into the Light)
   const lightItems = [
     { name: "The Oracle", path: "/oracle", icon: Database },
     { name: "Trust Protocol", path: "/trust-protocol", icon: Eye },
@@ -39,7 +41,7 @@ export function Navigation({ activePage, theme = "dark" }: NavigationProps) {
   const activeLinkBg = isDark ? "bg-[#e0e0e0] text-[#0f0f0f]" : "bg-black text-white"
 
   return (
-    <div className="fixed top-6 left-6 z-20">
+    <div className="fixed top-6 left-6 z-40">
       <button
         onClick={() => setShowNavDropdown(!showNavDropdown)}
         className={`p-2 rounded-full transition-colors duration-300 ${navButtonBg}`}
@@ -50,7 +52,7 @@ export function Navigation({ activePage, theme = "dark" }: NavigationProps) {
 
       {showNavDropdown && (
         <div className={`absolute top-12 left-0 border rounded-lg shadow-lg min-w-[240px] py-2 ${dropdownBg}`}>
-          {/* Dark group */}
+          {/* Core Experience */}
           {darkItems.map((item) => {
             const Icon = item.icon
             const isActive = item.name === activePage
@@ -63,7 +65,12 @@ export function Navigation({ activePage, theme = "dark" }: NavigationProps) {
               className += ` ${linkHoverBg}`
             }
             return (
-              <Link key={item.path} href={item.path} className={className} onClick={() => setShowNavDropdown(false)}>
+              <Link
+                key={item.path}
+                href={item.path}
+                className={className}
+                onClick={() => setShowNavDropdown(false)}
+              >
                 <Icon size={16} />
                 <span className="text-sm font-medium">{item.name}</span>
               </Link>
@@ -73,8 +80,10 @@ export function Navigation({ activePage, theme = "dark" }: NavigationProps) {
           {/* Divider */}
           <div className={`my-2 border-t ${isDark ? "border-[#333]" : "border-gray-200"}`} />
 
-          {/* Light header */}
-          <div className={`px-4 py-1 text-xs uppercase tracking-wider opacity-70 flex items-center gap-2 ${linkTextColor}`}>
+          {/* Step into the Light header */}
+          <div
+            className={`px-4 py-1 text-xs uppercase tracking-wider opacity-70 flex items-center gap-2 ${linkTextColor}`}
+          >
             <Sun size={12} />
             Step into the Light
           </div>
@@ -87,7 +96,12 @@ export function Navigation({ activePage, theme = "dark" }: NavigationProps) {
               isActive ? activeLinkBg : `${linkTextColor} ${linkHoverBg}`
             }`
             return (
-              <Link key={item.path} href={item.path} className={className} onClick={() => setShowNavDropdown(false)}>
+              <Link
+                key={item.path}
+                href={item.path}
+                className={className}
+                onClick={() => setShowNavDropdown(false)}
+              >
                 <Icon size={16} />
                 <span className="text-sm font-medium">{item.name}</span>
               </Link>

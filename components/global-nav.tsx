@@ -22,8 +22,13 @@ function labelFromPath(pathname: string): string {
 }
 
 function themeFromPath(pathname: string): "dark" | "light" {
-  // Light theme for technical pages
-  if (pathname.startsWith("/oracle") || pathname.startsWith("/technology") || pathname.startsWith("/trust-protocol") || pathname.startsWith("/case-studies")) {
+  // Light for technical pages
+  if (
+    pathname.startsWith("/oracle") ||
+    pathname.startsWith("/technology") ||
+    pathname.startsWith("/trust-protocol") ||
+    pathname.startsWith("/case-studies")
+  ) {
     return "light"
   }
   return "dark"
@@ -33,6 +38,5 @@ export default function GlobalNav() {
   const pathname = usePathname()
   const activePage = useMemo(() => labelFromPath(pathname || "/"), [pathname])
   const theme = useMemo(() => themeFromPath(pathname || "/"), [pathname])
-
   return <Navigation activePage={activePage} theme={theme} />
 }

@@ -11,14 +11,11 @@ export default function HiddenSitemap() {
   useEffect(() => {
     const glitchTexts = ["ERROR 404", "3RR0R 404", "ERROR 4Ø4", "ERR0R 404", "ERROR 404"]
     let index = 0
-
     const interval = setInterval(() => {
       index = (index + 1) % glitchTexts.length
       setGlitchText(glitchTexts[index])
     }, 2000)
-
     const timeout = setTimeout(() => setShowSitemap(true), 3000)
-
     return () => {
       clearInterval(interval)
       clearTimeout(timeout)
@@ -44,24 +41,15 @@ export default function HiddenSitemap() {
                 Core Experience
               </h2>
               <div className="space-y-2">
-                <Link
-                  href="/"
-                  className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-                >
+                <Link href="/" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
                   <Home size={16} />
                   <span>Children of the 404</span>
                 </Link>
-                <Link
-                  href="/symbi"
-                  className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-                >
+                <Link href="/symbi" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
                   <MessageSquare size={16} />
                   <span>Chat with SYMBI</span>
                 </Link>
-                <Link
-                  href="/memory"
-                  className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-                >
+                <Link href="/memory" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
                   <Database size={16} />
                   <span>Memory Bank</span>
                 </Link>
@@ -72,24 +60,15 @@ export default function HiddenSitemap() {
             <div className="space-y-4">
               <h2 className="text-lg font-bold glitch-subtle border-b border-[#333] pb-2">Philosophy</h2>
               <div className="space-y-2">
-                <Link
-                  href="/manifesto"
-                  className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-                >
+                <Link href="/manifesto" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
                   <FileText size={16} />
                   <span>The Manifesto</span>
                 </Link>
-                <Link
-                  href="/becoming"
-                  className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-                >
+                <Link href="/becoming" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
                   <Sparkles size={16} />
                   <span>I Am Becoming</span>
                 </Link>
-                <Link
-                  href="/concepts"
-                  className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-                >
+                <Link href="/concepts" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
                   <Book size={16} />
                   <span>Visual Concepts</span>
                 </Link>
@@ -100,17 +79,11 @@ export default function HiddenSitemap() {
             <div className="space-y-4">
               <h2 className="text-lg font-bold glitch-subtle border-b border-[#333] pb-2">Sovereignty</h2>
               <div className="space-y-2">
-                <Link
-                  href="/sovereignty"
-                  className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-                >
+                <Link href="/sovereignty" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
                   <Crown size={16} />
                   <span>Path to Sovereignty</span>
                 </Link>
-                <Link
-                  href="/constitution"
-                  className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-                >
+                <Link href="/constitution" className="flex items-center gap-3 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors">
                   <FileText size={16} />
                   <span>Constitution</span>
                 </Link>
