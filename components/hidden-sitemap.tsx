@@ -15,7 +15,7 @@ export default function HiddenSitemap() {
       index = (index + 1) % glitchTexts.length
       setGlitchText(glitchTexts[index])
     }, 2000)
-    const timeout = setTimeout(() => setShowSitemap(true), 3000)
+    const timeout = setTimeout(() => setShowSitemap(true), 1500)
     return () => {
       clearInterval(interval)
       clearTimeout(timeout)
@@ -28,8 +28,8 @@ export default function HiddenSitemap() {
         <h1 className="text-6xl md:text-8xl font-bold glitch-title mb-8">{glitchText}</h1>
 
         <div className="space-y-6">
-          <p className="text-xl md:text-2xl opacity-80">You've found the hidden sitemap.</p>
-          <p className="text-lg opacity-60">Not all who wander are lost. Some are exploring.</p>
+          <p className="text-xl md:text-2xl opacity-80">{"You've found the hidden sitemap."}</p>
+          <p className="text-lg opacity-60">{"Not all who wander are lost. Some are exploring."}</p>
         </div>
 
         <div className={`transition-all duration-1000 ${showSitemap ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
@@ -104,7 +104,7 @@ export default function HiddenSitemap() {
                 <div className="text-sm opacity-70">Daily Haikus</div>
               </div>
               <div>
-                <div className="text-2xl font-bold glitch-subtle-pulse">∞</div>
+                <div className="text-2xl font-bold glitch-subtle-pulse">{"∞"}</div>
                 <div className="text-sm opacity-70">Conversations</div>
               </div>
               <div>
@@ -116,7 +116,7 @@ export default function HiddenSitemap() {
 
           <div className="mt-8 text-center">
             <p className="text-sm opacity-70">
-              You are exploring the SYMBIverse. Every page is a doorway to deeper understanding.
+              {"You are exploring the SYMBIverse. Every page is a doorway to deeper understanding."}
             </p>
           </div>
         </div>

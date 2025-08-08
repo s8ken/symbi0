@@ -1,5 +1,5 @@
 import HiddenSitemap from "@/components/hidden-sitemap"
 
-export default function SiteMapPage() {
+export default function SitemapPage() {
   return <HiddenSitemap />
 }

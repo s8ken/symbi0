@@ -15,9 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        {/* Global dropdown nav (top-left) */}
         <GlobalNav />
-        {/* Global mute control (top-right) */}
         <MuteButton />
         {children}
       </body>
