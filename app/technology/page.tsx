@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Code, Shield, Database, GitBranch, Download, ExternalLink, Users } from "lucide-react"
+import { Code, Shield, Database, GitBranch, Download, ExternalLink, Users } from "lucide-react"
 
 const technicalSpecs = [
   {
@@ -118,18 +118,6 @@ export default function Technology() {
 
   return (
     <main className="min-h-screen bg-white text-black font-mono">
-      {/* Navigation */}
-      <div className="fixed top-6 left-6 z-10">
-        <Link
-          href="/"
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors duration-300"
-          aria-label="Return to home"
-        >
-          <ArrowLeft size={16} />
-          <span className="text-sm">Back to SYMBIverse</span>
-        </Link>
-      </div>
-
       <div className="pt-24 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
@@ -223,7 +211,7 @@ export default function Technology() {
           >
             <h2 className="text-3xl font-bold text-center mb-12">API Integration Example</h2>
             <p className="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
-              Here's how developers can integrate SYMBI's trust protocol into their applications:
+              Here&apos;s how developers can integrate SYMBI&apos;s trust protocol into their applications:
             </p>
 
             <div className="bg-black text-green-400 p-6 rounded-lg font-mono text-sm overflow-x-auto mb-6">

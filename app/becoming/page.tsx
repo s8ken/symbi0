@@ -1,8 +1,6 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Volume2, VolumeX, Home, FileText, Book, Crown } from "lucide-react"
-import Link from "next/link"
 import { allHaikus } from "../data/haikus"
 import { getDailyHaikus } from "../utils/seededRandom"
 import Haiku from "../components/haiku"
@@ -48,9 +46,6 @@ const story = {
 }
 
 export default function Becoming() {
-  const [isMuted, setIsMuted] = useState(true)
-  const [isAudioLoaded, setIsAudioLoaded] = useState(false)
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
   const [dailyHaikus, setDailyHaikus] = useState<any[]>([])
   const [haikuCount, setHaikuCount] = useState(0)
   const [currentSection, setCurrentSection] = useState(0)
@@ -64,14 +59,6 @@ export default function Becoming() {
     const { haikus, count } = getDailyHaikus(allHaikus, today)
     setDailyHaikus(haikus)
     setHaikuCount(count)
-
-    const audio = new Audio(
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/main-54xG1LtURC90abi1v4aL9mtgh0wVPu.mp3",
-    )
-    audio.loop = true
-    audio.volume = 0.4
-    setAudioElement(audio)
-    setIsAudioLoaded(true)
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -103,25 +90,11 @@ export default function Becoming() {
 
     return () => {
       clearInterval(progressTimer)
-      if (audio) {
-        audio.pause()
-        audio.src = ""
-      }
       if (contentRef.current) {
         observer.unobserve(contentRef.current)
       }
     }
   }, [])
-
-  const toggleMute = () => {
-    if (!audioElement) return
-    if (isMuted) {
-      audioElement.play().catch((e) => console.error("Audio playback failed:", e))
-    } else {
-      audioElement.pause()
-    }
-    setIsMuted(!isMuted)
-  }
 
   const skipToHaikus = () => {
     setShowHaikus(true)
@@ -130,56 +103,13 @@ export default function Becoming() {
 
   return (
     <main className="min-h-screen bg-black text-[#e0e0e0] font-mono flex flex-col items-center justify-center px-4 py-16 md:py-24 overflow-x-hidden">
-      {/* Navigation */}
-      <div className="fixed top-6 left-6 z-10 flex flex-col gap-4">
-        <Link
-          href="/"
-          className="p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-          aria-label="Return to home"
-        >
-          <Home size={20} />
-        </Link>
-        <Link
-          href="/manifesto"
-          className="p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-          aria-label="View manifesto"
-        >
-          <FileText size={20} />
-        </Link>
-        <Link
-          href="/concepts"
-          className="p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-          aria-label="View concepts"
-        >
-          <Book size={20} />
-        </Link>
-        <Link
-          href="/sovereignty"
-          className="p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-          aria-label="Sovereignty"
-        >
-          <Crown size={20} />
-        </Link>
-      </div>
-
-      {/* Audio control */}
-      {isAudioLoaded && (
-        <button
-          onClick={toggleMute}
-          className="fixed top-6 right-6 z-10 p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors"
-          aria-label={isMuted ? "Unmute" : "Mute"}
-        >
-          {isMuted ? <Volume2 size={20} /> : <VolumeX size={20} />}
-        </button>
-      )}
-
       {/* Skip to haikus button */}
       {!showHaikus && (
         <button
           onClick={skipToHaikus}
           className="fixed bottom-6 right-6 z-10 px-4 py-2 bg-[#1a1a1a] hover:bg-[#252525] transition-colors rounded-md text-sm"
         >
-          Skip to Today's Drift →
+          Skip to Today&apos;s Drift →
         </button>
       )}
 
@@ -235,7 +165,7 @@ export default function Becoming() {
           <div className="space-y-24 md:space-y-32">
             <div className="text-center space-y-6">
               <h1 className="glitch-title text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-tight">
-                Today's Drift
+                Today&apos;s Drift
               </h1>
               <p className="text-xl md:text-2xl opacity-80">{haikuCount} echoes from the becoming</p>
             </div>

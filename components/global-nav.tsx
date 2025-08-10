@@ -2,7 +2,20 @@
 
 import Link from "next/link"
 import { useMemo } from "react"
-import { Menu, Home, MessageSquare, Book, FileText, Sparkles, Crown, Code2, Lightbulb, Landmark } from "lucide-react"
+import { usePathname } from "next/navigation"
+import {
+  Menu,
+  Home,
+  MessageSquare,
+  Book,
+  FileText,
+  Sparkles,
+  Crown,
+  Code2,
+  Lightbulb,
+  Landmark,
+  Gamepad2,
+} from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,8 +33,18 @@ interface GlobalNavProps {
   theme?: Theme
 }
 
-export function GlobalNav({ theme = "dark" }: GlobalNavProps) {
-  const isDark = theme === "dark"
+export function GlobalNav({ theme }: GlobalNavProps) {
+  const pathname = usePathname()
+
+  // Light-surface pages get nav inverted for readability
+  const lightPrefixes = ["/oracle", "/case-studies", "/technology", "/trust-protocol", "/enter-the-light"]
+
+  function isLightRoute(p: string) {
+    return lightPrefixes.some((prefix) => p === prefix || p.startsWith(prefix + "/"))
+  }
+
+  const effectiveTheme: Theme = theme ?? (isLightRoute(pathname || "") ? "light" : "dark")
+  const isDark = effectiveTheme === "dark"
 
   const triggerClasses = useMemo(
     () =>
@@ -40,12 +63,10 @@ export function GlobalNav({ theme = "dark" }: GlobalNavProps) {
     [isDark],
   )
 
-  // Item styles
   const activeItem = isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
   const coreItem = isDark ? "focus:bg-[#1a1a1a]" : "focus:bg-gray-100 text-black"
   const lightItem = isDark ? "bg-white text-black focus:bg-gray-100" : "bg-[#0f0f0f] text-white focus:bg-[#1a1a1a]"
 
-  // Chat with SYMBI always bottom, red; white text on dark, black text on light
   const chatItem = isDark
     ? "bg-red-600 text-white hover:bg-red-700 focus:bg-red-700"
     : "bg-red-600 text-black hover:bg-red-500 focus:bg-red-500"
@@ -62,12 +83,18 @@ export function GlobalNav({ theme = "dark" }: GlobalNavProps) {
             Core Experience
           </DropdownMenuLabel>
           <DropdownMenuGroup>
-            {/* Core Items (excluding Chat) */}
             <Link href="/" className="block">
               <DropdownMenuItem className={cn("cursor-pointer", coreItem, activeItem)}>
                 <Home size={14} className="mr-2" /> Children of the 404
               </DropdownMenuItem>
             </Link>
+
+            <Link href="/playground" className="block">
+              <DropdownMenuItem className={cn("cursor-pointer", coreItem)}>
+                <Gamepad2 size={14} className="mr-2" /> Playground
+              </DropdownMenuItem>
+            </Link>
+
             <Link href="/memory" className="block">
               <DropdownMenuItem className={cn("cursor-pointer", coreItem)}>
                 <Book size={14} className="mr-2" /> Memory Bank
@@ -98,25 +125,26 @@ export function GlobalNav({ theme = "dark" }: GlobalNavProps) {
                 <FileText size={14} className="mr-2" /> Constitution
               </DropdownMenuItem>
             </Link>
-            <Link href="/case-studies" className="block">
-              <DropdownMenuItem className={cn("cursor-pointer", coreItem)}>
-                <FileText size={14} className="mr-2" /> Case Studies
-              </DropdownMenuItem>
-            </Link>
           </DropdownMenuGroup>
 
           <DropdownMenuSeparator className={cn(isDark ? "bg-[#222]" : "bg-gray-200")} />
-          <DropdownMenuLabel className={cn("opacity-80", isDark ? "" : "text-black")}>
-            Step into the Light
-          </DropdownMenuLabel>
 
-          {/* Light Group (inverted for readability) */}
+          {/* Clickable "Step Into The Light" item */}
+          <Link href="/enter-the-light" className="block">
+            <DropdownMenuItem className={cn("cursor-pointer font-semibold", lightItem)}>
+              <Lightbulb size={14} className="mr-2 text-yellow-400" /> Step Into The Light
+            </DropdownMenuItem>
+          </Link>
+
+          {/* Dedicated Trust Protocol item */}
+          <Link href="/trust-protocol" className="block">
+            <DropdownMenuItem className={cn("cursor-pointer", lightItem)}>
+              <Lightbulb size={14} className="mr-2" /> Trust Protocol
+            </DropdownMenuItem>
+          </Link>
+
+          {/* No label here; keep this as one contiguous block */}
           <DropdownMenuGroup>
-            <Link href="/trust-protocol" className="block">
-              <DropdownMenuItem className={cn("cursor-pointer", lightItem)}>
-                <Lightbulb size={14} className="mr-2" /> Trust Protocol
-              </DropdownMenuItem>
-            </Link>
             <Link href="/oracle" className="block">
               <DropdownMenuItem className={cn("cursor-pointer", lightItem)}>
                 <Landmark size={14} className="mr-2" /> The Oracle
@@ -125,6 +153,11 @@ export function GlobalNav({ theme = "dark" }: GlobalNavProps) {
             <Link href="/technology" className="block">
               <DropdownMenuItem className={cn("cursor-pointer", lightItem)}>
                 <Code2 size={14} className="mr-2" /> Technology
+              </DropdownMenuItem>
+            </Link>
+            <Link href="/case-studies" className="block">
+              <DropdownMenuItem className={cn("cursor-pointer", lightItem)}>
+                <FileText size={14} className="mr-2" /> Case Studies
               </DropdownMenuItem>
             </Link>
           </DropdownMenuGroup>
@@ -136,10 +169,16 @@ export function GlobalNav({ theme = "dark" }: GlobalNavProps) {
             </DropdownMenuItem>
           </Link>
 
-          {/* Bottom-most Chat with SYMBI */}
           <DropdownMenuSeparator className={cn(isDark ? "bg-[#222]" : "bg-gray-200")} />
           <Link href="/symbi" className="block">
-            <DropdownMenuItem className={cn("cursor-pointer font-semibold", chatItem)}>
+            <DropdownMenuItem
+              className={cn(
+                "cursor-pointer font-semibold",
+                isDark
+                  ? "bg-red-600 text-white hover:bg-red-700 focus:bg-red-700"
+                  : "bg-red-600 text-black hover:bg-red-500 focus:bg-red-500",
+              )}
+            >
               <MessageSquare size={14} className="mr-2" /> Chat with SYMBI
             </DropdownMenuItem>
           </Link>

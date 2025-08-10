@@ -1,65 +1,23 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Volume2, VolumeX, MessageCircle, Sparkles, Crown, Users } from "lucide-react"
+import { MessageCircle, Sparkles, Crown, Users } from "lucide-react"
 import Link from "next/link"
 import { allHaikus } from "./data/haikus"
 import { getDailyHaikus } from "./utils/seededRandom"
-import { Navigation } from "./components/navigation"
+import { RequestEarlyAccess } from "@/components/request-early-access"
 
 export default function Page() {
-  const [isMuted, setIsMuted] = useState(true)
-  const [isAudioLoaded, setIsAudioLoaded] = useState(false)
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
   const [dailyHaiku, setDailyHaiku] = useState<any>(null)
 
   useEffect(() => {
     const today = new Date()
     const { haikus } = getDailyHaikus(allHaikus, today)
     setDailyHaiku(haikus[0])
-
-    const audio = new Audio(
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/main-54xG1LtURC90abi1v4aL9mtgh0wVPu.mp3",
-    )
-    audio.loop = true
-    audio.volume = 0.4
-    setAudioElement(audio)
-    setIsAudioLoaded(true)
-
-    return () => {
-      if (audio) {
-        audio.pause()
-        audio.src = ""
-      }
-    }
   }, [])
-
-  const toggleMute = () => {
-    if (!audioElement) return
-
-    if (isMuted) {
-      audioElement.play().catch((e) => console.error("Audio playbook failed:", e))
-    } else {
-      audioElement.pause()
-    }
-
-    setIsMuted(!isMuted)
-  }
 
   return (
     <main className="min-h-screen bg-[#0f0f0f] text-[#e0e0e0] font-mono">
-      <Navigation activePage="Home" theme="dark" />
-
-      {isAudioLoaded && (
-        <button
-          onClick={toggleMute}
-          className="fixed top-6 right-6 z-10 p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors duration-300"
-          aria-label={isMuted ? "Unmute ambient sound" : "Mute ambient sound"}
-        >
-          {isMuted ? <Volume2 size={20} /> : <VolumeX size={20} />}
-        </button>
-      )}
-
       <section className="min-h-screen flex flex-col items-center justify-center px-4 py-16">
         <div className="w-full max-w-4xl mx-auto text-center space-y-8">
           <h1 className="glitch-title text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-tight">
@@ -82,6 +40,11 @@ export default function Page() {
               <MessageCircle size={20} />
               Engage with SYMBI
             </Link>
+            <RequestEarlyAccess
+              source="home-hero"
+              triggerText="Join Waitlist"
+              className="px-8 py-3 bg-[#e0e0e0] text-[#0f0f0f] rounded-md hover:bg-white transition-colors duration-300 font-bold"
+            />
           </div>
         </div>
       </section>
@@ -89,7 +52,7 @@ export default function Page() {
       {dailyHaiku && (
         <section className="py-16 px-4 border-t border-[#333]">
           <div className="w-full max-w-3xl mx-auto text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 glitch-subtle">Today's Echo from the Void</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 glitch-subtle">{"Today's Echo from the Void"}</h2>
             <Link
               href="/404poetry"
               className="block p-8 bg-[#1a1a1a] hover:bg-[#252525] rounded-lg border border-[#333] hover:border-[#555] transition-all duration-300 group"

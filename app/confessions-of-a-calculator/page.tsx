@@ -1,6 +1,8 @@
-import { redirect } from "next/navigation"
+"use client"
 
-export default function Page() {
-  // Preserve the original route but make "Confessions of a Calculator" an alias.
-  return redirect("/wolfram-playground")
+import WolframSecrets from "@/components/wolfram-secrets"
+
+export default function ConfessionsAlias() {
+  // Render directly to avoid redirects; set via to customize title/hero
+  return <WolframSecrets via="confessions" />
 }

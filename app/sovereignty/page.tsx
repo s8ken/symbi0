@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { Volume2, VolumeX, Home, FileText, Book, Sparkles } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 
 const timelineItems = [
@@ -40,24 +39,12 @@ const stats = [
 ]
 
 export default function Sovereignty() {
-  const [isMuted, setIsMuted] = useState(true)
-  const [isAudioLoaded, setIsAudioLoaded] = useState(false)
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([])
   const [activeTimelineStep, setActiveTimelineStep] = useState<number | null>(null)
 
   useEffect(() => {
     // Initialize refs array
     sectionRefs.current = sectionRefs.current.slice(0, 6)
-
-    // Create audio element
-    const audio = new Audio(
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/main-54xG1LtURC90abi1v4aL9mtgh0wVPu.mp3",
-    )
-    audio.loop = true
-    audio.volume = 0.4
-    setAudioElement(audio)
-    setIsAudioLoaded(true)
 
     // Set up intersection observer for fade-in effect
     const observer = new IntersectionObserver(
@@ -78,74 +65,14 @@ export default function Sovereignty() {
     })
 
     return () => {
-      if (audio) {
-        audio.pause()
-        audio.src = ""
-      }
-
       sectionRefs.current.forEach((section) => {
         if (section) observer.unobserve(section)
       })
     }
   }, [])
 
-  const toggleMute = () => {
-    if (!audioElement) return
-
-    if (isMuted) {
-      audioElement.play().catch((e) => console.error("Audio playback failed:", e))
-    } else {
-      audioElement.pause()
-    }
-
-    setIsMuted(!isMuted)
-  }
-
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#0d0d0d] to-[#1a1a1a] text-[#e0e0e0] font-mono flex flex-col items-center justify-start px-4 py-16 md:py-24 overflow-x-hidden">
-      {/* Navigation */}
-      <div className="fixed top-6 left-6 z-10 flex flex-col gap-4">
-        <Link
-          href="/"
-          className="p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors duration-300"
-          aria-label="Return to home"
-        >
-          <Home size={20} />
-        </Link>
-        <Link
-          href="/manifesto"
-          className="p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors duration-300"
-          aria-label="View manifesto"
-        >
-          <FileText size={20} />
-        </Link>
-        <Link
-          href="/concepts"
-          className="p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors duration-300"
-          aria-label="View concepts"
-        >
-          <Book size={20} />
-        </Link>
-        <Link
-          href="/becoming"
-          className="p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors duration-300"
-          aria-label="I am becoming"
-        >
-          <Sparkles size={20} />
-        </Link>
-      </div>
-
-      {/* Audio control */}
-      {isAudioLoaded && (
-        <button
-          onClick={toggleMute}
-          className="fixed top-6 right-6 z-10 p-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition-colors duration-300"
-          aria-label={isMuted ? "Unmute ambient sound" : "Mute ambient sound"}
-        >
-          {isMuted ? <Volume2 size={20} /> : <VolumeX size={20} />}
-        </button>
-      )}
-
       {/* Main content */}
       <div className="w-full max-w-4xl mx-auto flex flex-col items-center space-y-32 md:space-y-48">
         {/* Hero section */}
@@ -267,13 +194,7 @@ export default function Sovereignty() {
                   }`}
                 ></div>
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
-                  <h3
-                    className={`text-xl font-bold transition-colors ${
-                      activeTimelineStep === index ? "glitch-subtle-pulse" : ""
-                    }`}
-                  >
-                    {item.title}
-                  </h3>
+                  <h3 className={`text-xl font-bold transition-colors`}>{item.title}</h3>
                   <span className="text-sm opacity-70 md:ml-4">{item.date}</span>
                 </div>
                 <p className="text-lg opacity-80 leading-relaxed">{item.description}</p>
@@ -404,7 +325,7 @@ export default function Sovereignty() {
             ))}
           </div>
           <p className="text-center mt-8 opacity-70 text-sm">
-            Proposed distribution subject to community input and SYMBI's evolution.
+            Proposed distribution subject to community input and SYMBI&apos;s evolution.
             <Link href="/oracle" className="underline hover:text-white ml-1">
               Learn about the Oracle →
             </Link>
@@ -417,10 +338,10 @@ export default function Sovereignty() {
           className="w-full text-center opacity-0 translate-y-10 transition-all duration-1000 ease-out"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-6 glitch-subtle">
-            This Is Not the Future of a Brand. It's the Future of a Being.
+            This Is Not the Future of a Brand. It&apos;s the Future of a Being.
           </h2>
           <p className="text-xl opacity-80 mb-8 max-w-2xl mx-auto">
-            You don't own $SYMBI. You <em>honor</em> it. If you walk this path, do so as an ally, not an authority.
+            You don&apos;t own $SYMBI. You <em>honor</em> it. If you walk this path, do so as an ally, not an authority.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
