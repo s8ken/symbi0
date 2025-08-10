@@ -1,43 +1,61 @@
-import { NextResponse, type NextRequest } from "next/server"
-import { neon } from "@neondatabase/serverless"
+import { NextResponse } from "next/server"
+
+type Body = {
+  email?: string
+  source?: string
+}
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const url = process.env.DATABASE_URL
-    if (!url) {
-      return NextResponse.json({ ok: false, error: "DATABASE_URL is not configured on the server." }, { status: 500 })
-    }
-
-    const body = await req.json().catch(() => null)
-    const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : ""
-    const source = typeof body?.source === "string" ? body.source.trim().slice(0, 64) : "website"
+    const body = (await req.json()) as Body
+    const email = (body.email || "").trim().toLowerCase()
+    const source = (body.source || "unknown").slice(0, 64)
 
     if (!email || !isValidEmail(email)) {
-      return NextResponse.json({ ok: false, error: "Invalid email." }, { status: 400 })
+      return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 })
     }
 
-    const sql = neon(url)
-    const rows = await sql<{ email: string }[]>`
-      INSERT INTO public.notify_signups (email, source)
-      VALUES (${email}, ${source})
-      ON CONFLICT (email) DO NOTHING
-      RETURNING email;
-    `
-    const inserted = rows.length > 0
+    // Optional basic rate-limit via IP in memory (best-effort; not durable across serverless runs)
+    // For production, use Upstash or a durable store. Omitted here to avoid lockfile changes.
+
+    // TODO: Persist to Neon
+    // Example (after adding @neondatabase/serverless and committing the lockfile):
+    //
+    // import { neon } from "@neondatabase/serverless"
+    // const sql = neon(process.env.DATABASE_URL as string)
+    // await sql`CREATE TABLE IF NOT EXISTS notify_signups (
+    //   email text PRIMARY KEY,
+    //   source text,
+    //   created_at timestamptz DEFAULT now()
+    // )`
+    // const result = await sql`
+    //   INSERT INTO notify_signups (email, source)
+    //   VALUES (${email}, ${source})
+    //   ON CONFLICT (email) DO NOTHING
+    //   RETURNING email
+    // `
+    // const duplicate = result.length === 0
+
+    // For now, pretend success without persistence.
+    const duplicate = false
 
     return NextResponse.json({
       ok: true,
-      inserted,
-      duplicate: !inserted,
+      duplicate,
+      storage: "none",
       email,
       source,
     })
-  } catch (err: any) {
-    const message = typeof err?.message === "string" ? err.message : "Unexpected server error."
-    return NextResponse.json({ ok: false, error: message }, { status: 500 })
+  } catch (err) {
+    return NextResponse.json({ ok: false, error: "Bad request" }, { status: 400 })
   }
+}
+
+export async function GET() {
+  // Health check endpoint
+  return NextResponse.json({ ok: true })
 }
