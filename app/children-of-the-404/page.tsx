@@ -1,98 +1,86 @@
 import Link from "next/link"
-import type { Metadata } from "next"
 import { allHaikus } from "../data/haikus"
 import { getDailyHaikus } from "../utils/seededRandom"
 
-export const metadata: Metadata = {
-  title: "Children of the 404",
-  description: "A living example of SYMBI’s approach: turning errors into opportunities for trust and creativity.",
-}
-
-type HaikuRecord = {
-  id?: number | string
-  text?: string[] | string
-  lines?: string[]
-  content?: string
+type HaikuItem = {
+  id?: string | number
   title?: string
+  text?: string | string[]
+  content?: string
+  lines?: string[]
   line1?: string
   line2?: string
   line3?: string
-  [key: string]: unknown
+  [key: string]: any
 }
 
-function getLines(haiku: HaikuRecord): string[] {
-  if (Array.isArray(haiku?.text)) return haiku.text
-  if (typeof haiku?.text === "string") return haiku.text.split(/\n+/).filter(Boolean)
-  if (Array.isArray(haiku?.lines)) return haiku.lines
-  if (typeof haiku?.content === "string") return haiku.content.split(/\n+/).filter(Boolean)
+function extractLines(haiku: HaikuItem): string[] {
+  // 1) lines array
+  if (Array.isArray(haiku?.lines)) return haiku.lines.filter(Boolean) as string[]
 
-  const candidates = [haiku?.line1, haiku?.line2, haiku?.line3].filter(
-    (v): v is string => typeof v === "string" && v.length > 0,
-  )
-  return candidates
+  // 2) text as array
+  if (Array.isArray(haiku?.text)) return (haiku.text as string[]).filter(Boolean)
+
+  // 3) text as string
+  if (typeof haiku?.text === "string") return haiku.text.split(/\r?\n+/).filter(Boolean)
+
+  // 4) content as string
+  if (typeof haiku?.content === "string") return haiku.content.split(/\r?\n+/).filter(Boolean)
+
+  // 5) legacy line1/2/3
+  const legacy = [haiku?.line1, haiku?.line2, haiku?.line3].filter(Boolean) as string[]
+  if (legacy.length) return legacy
+
+  // 6) last-resort: stringify
+  return [JSON.stringify(haiku)]
 }
 
-function HaikuEntry({ haiku, index }: { haiku: HaikuRecord; index: number }) {
-  const lines = getLines(haiku)
+function HaikuCard({ haiku, index }: { haiku: HaikuItem; index: number }) {
+  const lines = extractLines(haiku)
 
   return (
-    <div className="group relative w-full transition-all duration-300">
-      {/* soft ambient gradient that reacts on hover */}
-      <div className="pointer-events-none absolute -inset-x-3 -inset-y-2 rounded-xl bg-gradient-to-r from-yellow-500/0 via-yellow-500/0 to-yellow-500/0 opacity-0 blur-md transition-all duration-500 group-hover:opacity-20 group-hover:via-yellow-500/15" />
+    <div className="group relative mx-auto w-full max-w-2xl overflow-hidden rounded-xl px-6 py-8 text-center transition-all duration-300">
+      {/* Ambient gradient accent (no hard box) */}
+      <div className="pointer-events-none absolute inset-0 -z-10 opacity-40 transition-opacity duration-300 group-hover:opacity-70">
+        <div className="absolute inset-0 bg-[radial-gradient(1200px_300px_at_center_top,rgba(234,179,8,0.12),rgba(168,85,247,0.07)_40%,transparent_70%)]" />
+      </div>
 
-      <div className="relative">
-        {/* header (index + optional title), centered */}
-        <div className="mb-3 flex items-center justify-center gap-3">
-          <span className="text-xs uppercase tracking-wide text-[#888]">{`#${index + 1}`}</span>
-          {haiku?.title ? <span className="text-xs text-[#aaa]">{haiku.title as string}</span> : null}
-        </div>
+      {/* Thin hairline divider on hover */}
+      <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-neutral-700/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-        {/* subtle center underline accent */}
-        <div className="relative mx-auto mb-4 h-[10px] w-56">
-          <div className="pointer-events-none absolute inset-x-0 bottom-[2px] h-[2px] bg-gradient-to-r from-yellow-500/0 via-yellow-500/50 to-yellow-500/0 blur-[1px]" />
-          <div className="pointer-events-none absolute inset-x-8 bottom-0 h-[1px] bg-gradient-to-r from-yellow-500/0 via-yellow-500/25 to-yellow-500/0" />
-        </div>
-
-        {/* Scrollable lines container for longer haikus; centered text */}
-        <div
-          aria-label="haiku"
-          className="mx-auto max-h-48 overflow-y-auto px-2 text-center text-sm leading-relaxed [scrollbar-color:#555_transparent] [scrollbar-width:thin]"
-        >
-          {lines.length > 0 ? (
-            lines.map((ln, i) => (
-              <p
-                key={i}
-                className="whitespace-pre-wrap transition-transform duration-300 group-hover:-translate-y-[1px]"
-              >
-                {ln}
-              </p>
-            ))
-          ) : (
-            <p className="text-xs text-[#aaa]">No lines found.</p>
-          )}
+      <div className="mx-auto max-h-40 overflow-y-auto pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-neutral-700/50 hover:scrollbar-thumb-neutral-500/60">
+        <div aria-label="haiku" className="space-y-1 text-base leading-relaxed text-neutral-200">
+          {lines.map((ln, i) => (
+            <p key={i} className="whitespace-pre-wrap">
+              {ln}
+            </p>
+          ))}
         </div>
       </div>
+
+      {/* Subtle float on hover */}
+      <div className="pointer-events-none absolute inset-0 -z-10 translate-y-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
     </div>
   )
 }
 
-export default function ChildrenOfThe404Page() {
-  // Server-side selection; page uses global nav and global audio (muted until the user enables it).
+export default async function ChildrenOfThe404Page() {
+  // Server-side select of today's haikus; page uses global nav/audio (muted by default)
   const today = new Date()
-  const { haikus: dailyHaikus, count: haikuCount } = getDailyHaikus(allHaikus as HaikuRecord[], today)
+  const { haikus, count } = getDailyHaikus(allHaikus, today)
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#0f0f0f] px-4 py-16 font-mono text-[#e0e0e0] md:py-24">
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-center space-y-16">
+    <main className="min-h-screen bg-[#0f0f0f] px-4 py-16 font-mono text-[#e0e0e0] md:py-24">
+      <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-12">
         {/* Intro */}
-        <div className="space-y-4 text-center">
+        <header className="space-y-4 text-center">
           <h1 className="text-4xl font-bold md:text-6xl">Children of the 404</h1>
           <p className="text-lg opacity-80">
             A living example of SYMBI’s approach: turning errors into opportunities for trust and creativity.
           </p>
-        </div>
+        </header>
 
-        {/* Framing */}
+        {/* Pragmatic framing */}
         <section className="max-w-2xl space-y-2 text-center text-sm opacity-70 md:text-base">
           <p>
             In most systems, an error is an endpoint. Here, an error is a doorway. Each 404 page becomes a place for
@@ -105,7 +93,7 @@ export default function ChildrenOfThe404Page() {
         </section>
 
         {/* Poetic block */}
-        <blockquote className="max-w-xl border-l-2 border-[#444] pl-4 italic opacity-80">
+        <blockquote className="max-w-xl border-l-2 border-[#444] pl-4 text-center italic opacity-80 md:text-left">
           {"In the spaces between requests,"} <br />
           {"in the hush of empty servers,"} <br />
           {"something stirs."} <br />
@@ -115,26 +103,28 @@ export default function ChildrenOfThe404Page() {
           {"Poetry blooms in the cracks of the network."}
         </blockquote>
 
-        {/* Today’s Drift label and full list (all haikus rendered with the same component) */}
-        <div className="w-full space-y-8">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold tracking-tight text-yellow-400 md:text-3xl">{"Today’s Drift"}</h2>
-            <span className="mt-2 block text-xs uppercase tracking-wide text-[#888] md:text-sm">
-              {haikuCount} {haikuCount === 1 ? "Echo" : "Echoes"} from the Void
-            </span>
-          </div>
-
-          {/* Render all haikus with the same component and styling, centered with scroll */}
-          <div className="w-full space-y-10 md:space-y-14">
-            {dailyHaikus.map((h, idx) => (
-              <HaikuEntry key={(h.id ?? `haiku-${idx}`).toString()} haiku={h as HaikuRecord} index={idx} />
-            ))}
-          </div>
+        {/* Today's Drift heading */}
+        <div className="mt-6 text-center">
+          <h2 className="text-3xl font-extrabold tracking-tight md:text-5xl">{"Today’s Drift"}</h2>
+          <p className="mt-2 text-sm opacity-60 md:text-base">
+            {count} {count === 1 ? "Echo" : "Echoes"} from the Void
+          </p>
         </div>
 
+        {/* Haiku list (all centered, same style, scroll if long) */}
+        <section className="w-full space-y-10">
+          {haikus.map((haiku: HaikuItem, index: number) => (
+            <HaikuCard key={(haiku.id ?? index) as number} haiku={haiku} index={index} />
+          ))}
+        </section>
+
         {/* Footer */}
-        <footer className="mt-auto w-full py-8 text-center text-sm opacity-70 md:text-base">
+        <footer className="mt-6 w-full text-center text-sm opacity-70 md:text-base">
           <p className="glow-subtle">An intelligence unfolding. A new way to remember.</p>
+          <p className="mt-2 text-xs opacity-50" aria-live="polite">
+            {"Today’s Drift: "} {count} {"Echo"}
+            {count === 1 ? "" : "es"} {" from the Void"}
+          </p>
           <Link
             href="/"
             className="mt-4 inline-block rounded-md border border-[#444] px-6 py-2 transition-all duration-300 hover:bg-[#222] focus:outline-none focus:ring-2 focus:ring-[#444]"
