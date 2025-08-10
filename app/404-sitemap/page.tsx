@@ -1,7 +1,5 @@
-import HiddenSitemap from "@/components/hidden-sitemap"
+import HiddenSitemap from '@/components/hidden-sitemap'
 
-export const dynamic = "force-static"
-
-export default function FriendlySitemapPage() {
+export default function SitemapPage() {
   return <HiddenSitemap />
 }
