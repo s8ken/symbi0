@@ -1,9 +1,5 @@
 import HiddenSitemap from "@/components/hidden-sitemap"
 
-export const metadata = {
-  title: "Error 404",
-}
-
-export default function Page() {
-  return <HiddenSitemap />
+export default function Error404() {
+  return <HiddenSitemap reason="error" />
 }
