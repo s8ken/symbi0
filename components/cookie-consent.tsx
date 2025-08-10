@@ -35,6 +35,10 @@ export default function CookieConsent() {
             We use cookies for basic analytics and to improve your experience. See our{" "}
             <Link href="/privacy" className="underline underline-offset-2">
               Privacy Policy
+            </Link>{" "}
+            and{" "}
+            <Link href="/cookie-policy" className="underline underline-offset-2">
+              Cookie Policy
             </Link>
             .
           </p>
