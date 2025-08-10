@@ -19,8 +19,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 })
     }
 
-    // Deploy-friendly: no DB write here (avoids lockfile/dependency churn).
-    // We can enable Neon persistence after the lockfile is updated or install command is relaxed.
+    // Deploy-safe: no DB write here (prevents lockfile/dependency issues).
+    // When you're ready, we can enable Neon insert after updating the lockfile or relaxing the install command.
     return NextResponse.json({
       ok: true,
       duplicate: false,
