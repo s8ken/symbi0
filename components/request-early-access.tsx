@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import * as React from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Send, Lock } from "lucide-react"
+import { Lock, Send } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 type EarlyAccessProps = {
   source?: string
@@ -22,17 +23,17 @@ type EarlyAccessProps = {
 
 function safeTrack(event: string, data?: Record<string, unknown>) {
   try {
-    // Only used in event handlers. No promises created during render.
     if (typeof navigator !== "undefined" && "sendBeacon" in navigator) {
       const payload = JSON.stringify({ event, data, ts: Date.now() })
       navigator.sendBeacon("/api/analytics", new Blob([payload], { type: "application/json" }))
-    } else {
-      // dev fallback
-      // console.debug("[track]", event, data)
     }
   } catch {
     // ignore analytics errors
   }
+}
+
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
 export function RequestEarlyAccess({
@@ -40,23 +41,29 @@ export function RequestEarlyAccess({
   triggerText = "Request Early Access",
   className,
 }: EarlyAccessProps) {
-  const [open, setOpen] = useState(false)
-  const [email, setEmail] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const [open, setOpen] = React.useState(false)
+  const [email, setEmail] = React.useState("")
+  const [loading, setLoading] = React.useState(false)
+  const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(null)
 
   async function submit() {
     if (!email) return
+    const trimmed = email.trim().toLowerCase()
+    if (!isValidEmail(trimmed)) {
+      setMessage({ type: "error", text: "Please enter a valid email." })
+      return
+    }
+
     setLoading(true)
     setMessage(null)
     try {
       const res = await fetch("/api/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), source }),
+        body: JSON.stringify({ email: trimmed, source }),
       })
-      const data = await res.json()
-      if (!res.ok || !data?.ok) {
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || data?.ok === false) {
         throw new Error(data?.error || "Failed to submit.")
       }
       safeTrack("early_access_submit", { source, duplicate: !!data?.duplicate })
@@ -77,13 +84,13 @@ export function RequestEarlyAccess({
   return (
     <>
       <Button
-        className={className}
+        className={cn("inline-flex items-center justify-center gap-2", className)}
         onClick={() => {
           setOpen(true)
           safeTrack("early_access_open", { source })
         }}
       >
-        <Lock className="h-4 w-4 mr-2" />
+        <Lock className="h-4 w-4" />
         {triggerText}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -106,6 +113,7 @@ export function RequestEarlyAccess({
               placeholder="you@domain.com"
               autoComplete="email"
               aria-describedby="ea-help"
+              required
             />
             <p id="ea-help" className="text-xs text-muted-foreground">
               We’ll only use your email to notify you about access.
@@ -113,7 +121,7 @@ export function RequestEarlyAccess({
             {message ? (
               <p
                 role="status"
-                className={message.type === "success" ? "text-green-600 text-sm" : "text-red-600 text-sm"}
+                className={cn("text-sm", message.type === "success" ? "text-green-600" : "text-red-600")}
               >
                 {message.text}
               </p>
@@ -124,8 +132,8 @@ export function RequestEarlyAccess({
             <Button variant="outline" onClick={() => setOpen(false)}>
               Close
             </Button>
-            <Button disabled={loading || !email} onClick={submit}>
-              <Send className="h-4 w-4 mr-2" />
+            <Button disabled={loading || !email} onClick={submit} className="inline-flex items-center gap-2">
+              <Send className="h-4 w-4" />
               {loading ? "Sending..." : "Notify me"}
             </Button>
           </DialogFooter>
@@ -135,4 +143,5 @@ export function RequestEarlyAccess({
   )
 }
 
+// Named and default exports so either import style works
 export default RequestEarlyAccess

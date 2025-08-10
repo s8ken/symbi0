@@ -19,8 +19,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 })
     }
 
-    // Persistence disabled to keep CI stable with frozen lockfile.
-    // Once you update pnpm-lock.yaml or allow --no-frozen-lockfile, we’ll connect to Neon and store the signup.
+    // Deploy-friendly: no DB write here (avoids lockfile/dependency churn).
+    // We can enable Neon persistence after the lockfile is updated or install command is relaxed.
     return NextResponse.json({
       ok: true,
       duplicate: false,
