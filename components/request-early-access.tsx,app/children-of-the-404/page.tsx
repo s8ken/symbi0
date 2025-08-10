@@ -20,19 +20,10 @@ type EarlyAccessProps = {
   className?: string
 }
 
-// Analytics helper that does not create promises during render.
-function safeTrack(event: string, data?: Record<string, unknown>) {
-  try {
-    if (typeof navigator !== "undefined" && "sendBeacon" in navigator) {
-      const payload = JSON.stringify({ event, data, ts: Date.now() })
-      navigator.sendBeacon("/api/analytics", new Blob([payload], { type: "application/json" }))
-    } else {
-      // No-op fallback
-      // console.debug("[track]", event, data)
-    }
-  } catch {
-    // ignore analytics errors
-  }
+// Safe, no-op analytics helper that won't create Promises during render.
+function track(_event: string, _data?: Record<string, any>) {
+  // Intentionally a no-op to avoid importing any server-only analytics utilities.
+  // You can wire this to your analytics later inside event handlers.
 }
 
 export function RequestEarlyAccess({
@@ -43,33 +34,27 @@ export function RequestEarlyAccess({
   const [open, setOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
 
   async function submit() {
     if (!email) return
     setLoading(true)
-    setMessage(null)
     try {
       const res = await fetch("/api/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), source }),
+        body: JSON.stringify({ email, source }),
       })
       const data = await res.json()
-      if (!res.ok || !data?.ok) {
-        throw new Error(data?.error || "Failed to submit.")
-      }
-      safeTrack("early_access_submit", { source, duplicate: !!data?.duplicate })
-      setMessage({
-        type: "success",
-        text: data?.duplicate ? "You're already on the list. We’ll keep you posted." : "Thanks! You’re on the list.",
-      })
+      if (!res.ok) throw new Error(data?.error || "Failed to save")
+      try {
+        track("early_access_submit", { source, storage: data?.storage })
+      } catch {}
+      setOpen(false)
       setEmail("")
-      // Optionally auto-close after a short delay
-      setTimeout(() => setOpen(false), 800)
-    } catch (e: any) {
-      safeTrack("early_access_submit_error", { source })
-      setMessage({ type: "error", text: e?.message || "Something went wrong. Please try again." })
+    } catch {
+      try {
+        track("early_access_submit_error", { source })
+      } catch {}
     } finally {
       setLoading(false)
     }
@@ -81,13 +66,17 @@ export function RequestEarlyAccess({
         className={className}
         onClick={() => {
           setOpen(true)
-          safeTrack("early_access_open", { source })
+          try {
+            track("early_access_open", { source })
+          } catch {}
         }}
+        data-track="early_access_click"
+        data-source={source}
       >
         <Lock className="h-4 w-4 mr-2" />
         {triggerText}
       </Button>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(o) => setOpen(o)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -96,7 +85,6 @@ export function RequestEarlyAccess({
             </DialogTitle>
             <DialogDescription>Leave your email and we’ll notify you when access unlocks.</DialogDescription>
           </DialogHeader>
-
           <div className="space-y-2">
             <Label htmlFor="ea-email">Email</Label>
             <Input
@@ -106,22 +94,8 @@ export function RequestEarlyAccess({
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@domain.com"
               autoComplete="email"
-              aria-describedby="ea-help"
-              required
             />
-            <p id="ea-help" className="text-xs text-muted-foreground">
-              We’ll only use your email to notify you about access.
-            </p>
-            {message ? (
-              <p
-                role="status"
-                className={message.type === "success" ? "text-green-600 text-sm" : "text-red-600 text-sm"}
-              >
-                {message.text}
-              </p>
-            ) : null}
           </div>
-
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setOpen(false)}>
               Close
