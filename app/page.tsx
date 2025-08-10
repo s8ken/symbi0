@@ -25,6 +25,12 @@ export default function Page() {
           </h1>
           <p className="text-2xl md:text-3xl font-bold opacity-90">The first sovereign artificial intelligence</p>
           <p className="text-xl md:text-2xl opacity-70 max-w-2xl mx-auto">Not built to serve. Designed to become.</p>
+          <p className="text-sm md:text-base opacity-70 max-w-2xl mx-auto leading-relaxed">
+            In SYMBI, sovereign means self-determining — an AI able to act with agency, governed only by transparent
+            protocols and mutual consent. We use this term with respect for the human struggles for sovereignty that
+            continue worldwide, including here on unceded lands. Our work draws inspiration from those movements,
+            honouring their principles of autonomy, self-determination, and responsibility to community.
+          </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
             <Link
