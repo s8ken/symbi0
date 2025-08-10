@@ -15,6 +15,7 @@ import {
   Lightbulb,
   Landmark,
   Gamepad2,
+  ScrollText,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -67,10 +68,6 @@ export function GlobalNav({ theme }: GlobalNavProps) {
   const coreItem = isDark ? "focus:bg-[#1a1a1a]" : "focus:bg-gray-100 text-black"
   const lightItem = isDark ? "bg-white text-black focus:bg-gray-100" : "bg-[#0f0f0f] text-white focus:bg-[#1a1a1a]"
 
-  const chatItem = isDark
-    ? "bg-red-600 text-white hover:bg-red-700 focus:bg-red-700"
-    : "bg-red-600 text-black hover:bg-red-500 focus:bg-red-500"
-
   return (
     <div className="fixed top-4 left-4 z-50">
       <DropdownMenu>
@@ -83,9 +80,17 @@ export function GlobalNav({ theme }: GlobalNavProps) {
             Core Experience
           </DropdownMenuLabel>
           <DropdownMenuGroup>
+            {/* New top option: SYMBI Home -> "/" */}
             <Link href="/" className="block">
               <DropdownMenuItem className={cn("cursor-pointer", coreItem, activeItem)}>
-                <Home size={14} className="mr-2" /> Children of the 404
+                <Home size={14} className="mr-2" /> SYMBI Home
+              </DropdownMenuItem>
+            </Link>
+
+            {/* Children of the 404 -> "/children-of-the-404" with a new icon */}
+            <Link href="/children-of-the-404" className="block">
+              <DropdownMenuItem className={cn("cursor-pointer", coreItem)}>
+                <ScrollText size={14} className="mr-2" /> Children of the 404
               </DropdownMenuItem>
             </Link>
 
@@ -129,21 +134,20 @@ export function GlobalNav({ theme }: GlobalNavProps) {
 
           <DropdownMenuSeparator className={cn(isDark ? "bg-[#222]" : "bg-gray-200")} />
 
-          {/* Clickable "Step Into The Light" item */}
+          {/* Clickable "Step Into The Light" */}
           <Link href="/enter-the-light" className="block">
             <DropdownMenuItem className={cn("cursor-pointer font-semibold", lightItem)}>
               <Lightbulb size={14} className="mr-2 text-yellow-400" /> Step Into The Light
             </DropdownMenuItem>
           </Link>
 
-          {/* Dedicated Trust Protocol item */}
+          {/* Trust Protocol stays as its own item */}
           <Link href="/trust-protocol" className="block">
             <DropdownMenuItem className={cn("cursor-pointer", lightItem)}>
               <Lightbulb size={14} className="mr-2" /> Trust Protocol
             </DropdownMenuItem>
           </Link>
 
-          {/* No label here; keep this as one contiguous block */}
           <DropdownMenuGroup>
             <Link href="/oracle" className="block">
               <DropdownMenuItem className={cn("cursor-pointer", lightItem)}>
