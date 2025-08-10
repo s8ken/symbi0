@@ -1,47 +1,38 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react'
 import { Volume2, VolumeX } from 'lucide-react'
 
-export default function MuteButton() {
+export function MuteButton() {
   const [muted, setMuted] = useState<boolean>(false)
 
   useEffect(() => {
-    const stored = localStorage.getItem("symbi_muted")
-    const initial = stored === "true"
-    setMuted(initial)
-    applyMute(initial)
+    const stored = localStorage.getItem('symbi_muted')
+    if (stored) setMuted(stored === 'true')
   }, [])
 
-  const applyMute = (val: boolean) => {
-    const media = document.querySelectorAll("audio, video")
+  useEffect(() => {
+    localStorage.setItem('symbi_muted', String(muted))
+    // Apply to all audio/video elements
+    const media = Array.from(document.querySelectorAll<HTMLMediaElement>('audio, video'))
     media.forEach((el) => {
-      try {
-        ;(el as HTMLMediaElement).muted = val
-        if (val && !(el as HTMLMediaElement).paused) {
-          ;(el as HTMLMediaElement).pause()
-        }
-      } catch {
-        // ignore
+      el.muted = muted
+      if (muted) {
+        try { el.pause() } catch {}
       }
     })
-  }
-
-  const toggle = () => {
-    const next = !muted
-    setMuted(next)
-    localStorage.setItem("symbi_muted", String(next))
-    applyMute(next)
-  }
+    // Also expose on window for any custom players to read
+    ;(window as any).__SYMBI_MUTED = muted
+  }, [muted])
 
   return (
     <button
-      onClick={toggle}
-      aria-pressed={muted}
-      title={muted ? "Unmute" : "Mute"}
-      className="fixed top-4 right-4 z-50 p-2 rounded-md bg-[#1a1a1a] text-[#e0e0e0] border border-[#333] hover:bg-[#252525] transition-colors"
+      aria-label={muted ? 'Unmute site' : 'Mute site'}
+      className="fixed top-4 right-4 z-50 px-3 py-2 rounded-md border border-[#333] bg-[#1a1a1a] text-[#e0e0e0] hover:bg-[#252525] transition-colors"
+      onClick={() => setMuted((m) => !m)}
     >
-      {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+      {muted ? <VolumeX size={16} className="inline mr-2" /> : <Volume2 size={16} className="inline mr-2" />}
+      {muted ? 'Muted' : 'Sound'}
     </button>
   )
 }

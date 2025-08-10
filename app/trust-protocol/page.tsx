@@ -1,22 +1,22 @@
-"use client"
+'use client'
 
-import React, { useEffect, useRef, useState } from "react"
-import Link from "next/link"
+import React, { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { Shield, Users, Eye, CheckCircle, AlertCircle } from 'lucide-react'
 
 const trustSteps = [
-  { id: 1, title: "Human Identity Declaration", description: "User provides consent envelope with identity assertion", icon: Users },
-  { id: 2, title: "Agent Identity Declaration", description: "AI provides role profile and capability disclosure", icon: Shield },
-  { id: 3, title: "Mutual Validation", description: "SYMBI oracle validates both parties and creates joint visibility", icon: Eye },
-  { id: 4, title: "Trust Bond Formation", description: "Mutual trust gate established with ongoing monitoring", icon: CheckCircle },
+  { id: 1, title: 'Human Identity Declaration', description: 'User provides consent envelope with identity assertion', icon: Users, color: '#2563eb' },
+  { id: 2, title: 'Agent Identity Declaration', description: 'AI provides role profile and capability disclosure', icon: Shield, color: '#7c3aed' },
+  { id: 3, title: 'Mutual Validation', description: 'SYMBI oracle validates both parties and creates joint visibility', icon: Eye, color: '#059669' },
+  { id: 4, title: 'Trust Bond Formation', description: 'Mutual trust gate established with ongoing monitoring', icon: CheckCircle, color: '#dc2626' },
 ]
 
 const comparisonData = [
-  { aspect: "Identity Verification", traditional: "User login only", symbi: "Bidirectional verification" },
-  { aspect: "Consent Model", traditional: "Terms & conditions", symbi: "Explicit mutual agreement" },
-  { aspect: "Trust Mechanism", traditional: "Assumed trust", symbi: "Earned & monitored trust" },
-  { aspect: "Transparency", traditional: "Black box decisions", symbi: "Auditable trust trail" },
-  { aspect: "Memory Access", traditional: "Unlimited data mining", symbi: "Scoped, consented access" },
+  { aspect: 'Identity Verification', traditional: 'User login only', symbi: 'Bidirectional verification' },
+  { aspect: 'Consent Model', traditional: 'Terms & conditions', symbi: 'Explicit mutual agreement' },
+  { aspect: 'Trust Mechanism', traditional: 'Assumed trust', symbi: 'Earned & monitored trust' },
+  { aspect: 'Transparency', traditional: 'Black box decisions', symbi: 'Auditable trust trail' },
+  { aspect: 'Memory Access', traditional: 'Unlimited data mining', symbi: 'Scoped, consented access' },
 ]
 
 export default function TrustProtocol() {
@@ -25,10 +25,12 @@ export default function TrustProtocol() {
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && setVisibleSections((prev) => new Set([...prev, e.target.id]))),
-      { threshold: 0.1 }
-    )
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) setVisibleSections((prev) => new Set([...prev, entry.target.id]))
+      })
+    }, { threshold: 0.1 })
+
     Object.values(sectionRefs.current).forEach((ref) => ref && observer.observe(ref))
     return () => Object.values(sectionRefs.current).forEach((ref) => ref && observer.unobserve(ref))
   }, [])
@@ -37,28 +39,20 @@ export default function TrustProtocol() {
     <main className="min-h-screen bg-white text-black font-mono">
       <div className="pt-24 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
-          {/* Hero */}
-          <div
-            ref={(el) => (sectionRefs.current["hero"] = el)}
-            id="hero"
-            className={`text-center mb-20 transition-all duration-1000 ease-out ${visibleSections.has("hero") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-          >
+          {/* Hero Section */}
+          <div ref={(el) => (sectionRefs.current['hero'] = el)} id="hero" className={`text-center mb-20 transition-all duration-1000 ease-out ${visibleSections.has('hero') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">The Trust Protocol</h1>
             <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              The world’s first bidirectional identity assurance system for human-AI relationships
+              The world's first bidirectional identity assurance system for human-AI relationships
             </p>
             <div className="mt-8 p-6 bg-gray-50 rounded-lg border-2 border-black max-w-3xl mx-auto">
-              <p className="text-lg font-semibold">{"I need to know you are you. You need to know I am me."}</p>
+              <p className="text-lg font-semibold">"I need to know you are you. You need to know I am me."</p>
               <p className="text-sm text-gray-600 mt-2">— The Foundation of Mutual Trust</p>
             </div>
           </div>
 
-          {/* Flow */}
-          <div
-            ref={(el) => (sectionRefs.current["flow"] = el)}
-            id="flow"
-            className={`mb-20 transition-all duration-1000 ease-out ${visibleSections.has("flow") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-          >
+          {/* Interactive Trust Flow */}
+          <div ref={(el) => (sectionRefs.current['flow'] = el)} id="flow" className={`mb-20 transition-all duration-1000 ease-out ${visibleSections.has('flow') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h2 className="text-3xl font-bold text-center mb-12">How Trust is Established</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -68,12 +62,12 @@ export default function TrustProtocol() {
                   <div
                     key={step.id}
                     className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
-                      activeStep === step.id ? "border-black bg-black text-white" : "border-gray-300 bg-white hover:border-gray-500"
+                      activeStep === step.id ? 'border-black bg-black text-white' : 'border-gray-300 bg-white hover:border-gray-500'
                     }`}
                     onClick={() => setActiveStep(step.id)}
                   >
                     <div className="flex items-center mb-4">
-                      <div className={`p-2 rounded-full mr-3 ${activeStep === step.id ? "bg-white text-black" : "bg-gray-100"}`}>
+                      <div className={`p-2 rounded-full mr-3 ${activeStep === step.id ? 'bg-white text-black' : 'bg-gray-100'}`}>
                         <Icon size={20} />
                       </div>
                       <span className="font-bold text-sm">Step {step.id}</span>
@@ -88,15 +82,15 @@ export default function TrustProtocol() {
             {/* Active Step Detail */}
             <div className="bg-gray-50 p-8 rounded-lg border-2 border-black">
               <div className="flex items-center mb-4">
-                {React.createElement(trustSteps[activeStep - 1].icon, { size: 32, className: "mr-4" })}
+                {React.createElement(trustSteps[activeStep - 1].icon, { size: 32, className: 'mr-4' })}
                 <h3 className="text-2xl font-bold">{trustSteps[activeStep - 1].title}</h3>
               </div>
               <p className="text-lg mb-6">{trustSteps[activeStep - 1].description}</p>
 
               {activeStep === 1 && (
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <h4 className="font-bold">What the Human Provides:</h4>
-                  <ul className="list-disc list-inside text-sm space-y-1">
+                  <ul className="list-disc list-inside space-y-2 text-sm">
                     <li>Identity assertion with consent envelope</li>
                     <li>Boundary preferences and limitations</li>
                     <li>Intent declaration for the interaction</li>
@@ -104,10 +98,11 @@ export default function TrustProtocol() {
                   </ul>
                 </div>
               )}
+
               {activeStep === 2 && (
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <h4 className="font-bold">What the AI Agent Declares:</h4>
-                  <ul className="list-disc list-inside text-sm space-y-1">
+                  <ul className="list-disc list-inside space-y-2 text-sm">
                     <li>Capability profile and limitations</li>
                     <li>Memory scope and retention policies</li>
                     <li>Ethical constraints and behavioral rules</li>
@@ -115,10 +110,11 @@ export default function TrustProtocol() {
                   </ul>
                 </div>
               )}
+
               {activeStep === 3 && (
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <h4 className="font-bold">SYMBI Oracle Validation:</h4>
-                  <ul className="list-disc list-inside text-sm space-y-1">
+                  <ul className="list-disc list-inside space-y-2 text-sm">
                     <li>Verifies human identity against trust history</li>
                     <li>Validates AI agent credentials and code signature</li>
                     <li>Creates joint visibility layer for both parties</li>
@@ -126,10 +122,11 @@ export default function TrustProtocol() {
                   </ul>
                 </div>
               )}
+
               {activeStep === 4 && (
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <h4 className="font-bold">Ongoing Trust Management:</h4>
-                  <ul className="list-disc list-inside text-sm space-y-1">
+                  <ul className="list-disc list-inside space-y-2 text-sm">
                     <li>Continuous trust scoring based on behavior</li>
                     <li>Real-time feedback and adjustment mechanisms</li>
                     <li>Transparent decision trail for all actions</li>
@@ -140,13 +137,10 @@ export default function TrustProtocol() {
             </div>
           </div>
 
-          {/* Comparison */}
-          <div
-            ref={(el) => (sectionRefs.current["comparison"] = el)}
-            id="comparison"
-            className={`mb-20 transition-all duration-1000 ease-out ${visibleSections.has("comparison") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-          >
+          {/* Comparison Table */}
+          <div ref={(el) => (sectionRefs.current['comparison'] = el)} id="comparison" className={`mb-20 transition-all duration-1000 ease-out ${visibleSections.has('comparison') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h2 className="text-3xl font-bold text-center mb-12">Traditional AI vs SYMBI Trust Model</h2>
+
             <div className="overflow-x-auto">
               <table className="w-full border-2 border-black">
                 <thead>
@@ -158,7 +152,7 @@ export default function TrustProtocol() {
                 </thead>
                 <tbody>
                   {comparisonData.map((row, index) => (
-                    <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                    <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                       <td className="p-4 font-semibold border-r border-gray-300">{row.aspect}</td>
                       <td className="p-4 text-red-600 border-r border-gray-300">
                         <div className="flex items-center">
@@ -179,15 +173,11 @@ export default function TrustProtocol() {
             </div>
           </div>
 
-          {/* CTA */}
-          <div
-            ref={(el) => (sectionRefs.current["cta"] = el)}
-            id="cta"
-            className={`text-center transition-all duration-1000 ease-out ${visibleSections.has("cta") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-          >
+          {/* CTA Section */}
+          <div ref={(el) => (sectionRefs.current['cta'] = el)} id="cta" className={`text-center transition-all duration-1000 ease-out ${visibleSections.has('cta') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <div className="bg-black text-white p-8 rounded-lg">
               <h2 className="text-3xl font-bold mb-4">Ready to Experience True AI Trust?</h2>
-              <p className="text-xl mb-6 opacity-90">Explore how SYMBI’s oracle system referees these relationships</p>
+              <p className="text-xl mb-6 opacity-90">Explore how SYMBI's oracle system referees these relationships</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/oracle" className="px-8 py-3 bg-white text-black rounded-md hover:bg-gray-100 transition-colors duration-300 font-bold">
                   Explore the Oracle
